@@ -2,3 +2,4 @@
 
 ## Table of Contents:
 - [Arrays](arrays/arrays.md)
+- [Trees](trees/trees.md)
