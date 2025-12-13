@@ -1,10 +1,8 @@
-# Concurrency
-
-## Basics
+# Basics
 
 Creating Threads
 
-### Extending the Thread class
+## Extending the Thread class
 
 ``` java
 class MyThread extends Thread {
@@ -22,7 +20,7 @@ thread.start();
 
 Limitation: Cannot extend another class because Java supports only single inheritance.
 
-### Implementing Runnable Interface
+## Implementing Runnable Interface
 
 ``` java
 class MyRunnable implements Runnable {
@@ -52,7 +50,7 @@ Separates task from thread control.
 Allows multiple threads to share the same Runnable instance.
 
 
-### Using Callable and Future
+## Using Callable and Future
 
 Callable is similar to Runnable but can return a value and throw checked exceptions.
 
@@ -76,7 +74,7 @@ System.out.println("Result from Callable: " + result);
 
 ```
 
-Using ExecutorService
+Using ExecutorService, it can directly take callable and return a future
 
 ```java
  Callable<String> task = () -> {
@@ -91,6 +89,10 @@ Future<String> future = executor.submit(task);
 try {
     String result = future.get();
     System.out.println("Result: " + result);
+
+} catch (TimeoutException e) {
+    System.out.println("Task timed out!");
+    future.cancel(true); // interrupt the running task
 
 } catch (ExecutionException e) {
     // Checked exceptions are wrapped inside ExecutionException
