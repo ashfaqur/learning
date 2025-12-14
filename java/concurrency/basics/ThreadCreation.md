@@ -1,6 +1,4 @@
-# Basics
-
-Creating Threads
+# Creating Threads
 
 ## Extending the Thread class
 
