@@ -1,22 +1,22 @@
 # Inter Thread Communication
 
 - [Inter Thread Communication](#inter-thread-communication)
-- [wait(), notify(), notifyAll()](#wait-notify-notifyall)
-  - [wait()](#wait)
-  - [notify()](#notify)
-  - [notifyAll()](#notifyall)
-  - [Classic producer-consumer example](#classic-producer-consumer-example)
-  - [Code](#code)
+  - [wait(), notify(), notifyAll()](#wait-notify-notifyall)
+    - [wait()](#wait)
+    - [notify()](#notify)
+    - [notifyAll()](#notifyall)
+    - [Classic producer-consumer example](#classic-producer-consumer-example)
+    - [Code](#code)
   - [Thread.join()](#threadjoin)
   - [Thread.sleep() vs Thread.yield()](#threadsleep-vs-threadyield)
   - [Lock Conditions (Condition.await(), signal(), signalAll())](#lock-conditions-conditionawait-signal-signalall)
 
 
-# wait(), notify(), notifyAll()
+## wait(), notify(), notifyAll()
 
 These are methods of Object, not Thread. They are used to coordinate threads that share a lock.
 
-## wait()
+### wait()
 
 Puts the thread in the Waiting state.
 
@@ -33,19 +33,19 @@ synchronized (obj) {
 }
 ```
 
-## notify()
+### notify()
 
 Wakes up one thread waiting on the object’s monitor.
 
 The awakened thread must reacquire the lock before continuing.
 
-## notifyAll()
+### notifyAll()
 
 Wakes up all threads waiting on the object’s monitor.
 
 Threads compete for the lock.
 
-## Classic producer-consumer example
+### Classic producer-consumer example
 
 ```java
 class DataBox {
@@ -73,7 +73,7 @@ class DataBox {
 
 ```
 
-## Code
+### Code
 
 A simple Java example showing a thread entering the WAITING state using Object.wait(), and another thread notifying it:
 

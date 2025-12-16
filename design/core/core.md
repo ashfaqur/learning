@@ -4,6 +4,7 @@ Core Concepts let you reason about, explain, and justify any system design regar
 
 ## Table of Contents:
 - [Networking Essentials](Networking.md)
+- [Load Balancers](LoadBalancers.md)
 - [CAP Theorem](CapTheorem.md)
 - [API Design](ApiDesign.md)
 - [Data Modelling](DataModelling.md)
