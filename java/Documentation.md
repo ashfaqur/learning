@@ -1,3 +1,12 @@
+- [Data Transfer Object (DTO)](#data-transfer-object-dto)
+- [Lamda And Streams](#lamda-and-streams)
+  - [Streams](#streams)
+  - [Optional](#optional)
+    - [Optional.get()](#optionalget)
+    - [Optional.orElse(T other)](#optionalorelset-other)
+    - [Optional.orElseThrow()](#optionalorelsethrow)
+
+
 # Data Transfer Object (DTO)
 
 A DTO is a simple Java object used to transfer data between layers or systems without containing business logic.

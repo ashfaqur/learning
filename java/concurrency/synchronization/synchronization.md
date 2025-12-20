@@ -5,3 +5,4 @@
 - [Volatile](Volatile.md)
 - [Atomic](Atomic.md)
 - [Locks](Locks.md)
+- [Synchronizers](Synchronizers.md)
