@@ -19,8 +19,8 @@ public int[] twoSumBrute(int[] nums, int target) {
     return new int[]{};
 }
 ```
-**Time O(n2)**
-**Space O(1)**
+Time O(n2)
+Space O(1)
 
 ## Optimized
 
@@ -41,5 +41,5 @@ public int[] twoSum(int[] nums, int target) {
 }
 ```
 
-**Time O(n)**
-**Space O(n)**
+Time O(n)
+Space O(n)
