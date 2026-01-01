@@ -19,6 +19,25 @@
   - [Serialize Access via Queue](#serialize-access-via-queue)
   - [When Things Get Distributed — It Gets Harder](#when-things-get-distributed--it-gets-harder)
   - [Why Interviewers Emphasize This Line](#why-interviewers-emphasize-this-line)
+- [Scaling Reads](#scaling-reads)
+  - [Strategies for Scaling Reads](#strategies-for-scaling-reads)
+    - [Optimize Reads in the Database](#optimize-reads-in-the-database)
+    - [Read Replicas](#read-replicas)
+    - [External Caching](#external-caching)
+  - [Common Read Scaling Architecture](#common-read-scaling-architecture)
+  - [Key Considerations](#key-considerations)
+  - [Mental Model](#mental-model)
+- [Scaling Writes](#scaling-writes)
+  - [Core Strategies for Scaling Writes](#core-strategies-for-scaling-writes)
+    - [Horizontal Sharding (Split Data Across Databases)](#horizontal-sharding-split-data-across-databases)
+    - [Vertical Partitioning (Split by Data Type)](#vertical-partitioning-split-by-data-type)
+    - [Batching \& Write Aggregation](#batching--write-aggregation)
+  - [Handling Write Bursts (Traffic Spikes)](#handling-write-bursts-traffic-spikes)
+    - [Write Queues (Buffer Spikes)](#write-queues-buffer-spikes)
+    - [Load Shedding (Drop Less-Important Writes)](#load-shedding-drop-less-important-writes)
+    - [Prioritized Writes](#prioritized-writes)
+  - [Why Write Scaling Is Much Harder Than Read Scaling](#why-write-scaling-is-much-harder-than-read-scaling)
+  - [Rules of Thumb (Interview-Level Intuition)](#rules-of-thumb-interview-level-intuition)
 
 
 # Pushing Realtime Updates
@@ -272,8 +291,6 @@ There are three main classes of solutions.
 Idea:
 “If someone is modifying this record, nobody else can.”
 
-This is like taking a key to a bathroom stall — others must wait.
-
 Typical implementations:
 - DB row lock (SELECT ... FOR UPDATE)
 - Application-level mutex
@@ -298,7 +315,6 @@ Best for:
 
 ## Optimistic Concurrency (Detect Conflicts)
 
-Idea:
 “Let users try — if two modify the same resource, one fails.”
 
 Nobody blocks — but conflicts are rejected.
@@ -343,7 +359,6 @@ This works like:
 - Bid1
 - Bid2
 - Bid3
-
 
 Worker applies them sequentially.
 ✔ Zero race conditions
@@ -419,4 +434,316 @@ Interviewers want to see:
 
 “I’d first attempt to handle contention inside a single transactional database, because databases are very good at conflict control. Only if we outgrow scaling limits would I consider distributed coordination — and then I’d apply queuing, sharding, or locking per-resource.”
 
-That shows maturity.
+# Scaling Reads
+
+Reads are much more frequent than writes.
+
+Example: Instagram
+- Posting a photo = 1 write
+- Opening feed = dozens of reads for posts, user info, likes, comments
+- Typical read-to-write ratio: 10:1 → 100:1+
+
+Databases can handle writes fairly easily, but high-volume reads can overwhelm them quickly.
+
+Reads are like “many mouths eating from the same pantry,” while writes are “adding food to the pantry.”
+
+## Strategies for Scaling Reads
+
+There’s a natural progression of strategies as your read traffic grows:
+
+### Optimize Reads in the Database
+
+- Indexing: create indexes on frequently queried columns
+
+Example: SELECT * FROM posts WHERE user_id = ? → add index on user_id
+
+Denormalization: duplicate some data to avoid expensive joins
+
+Example: store user_name in posts table to avoid joining users every time
+
+Query optimization: avoid SELECT *, fetch only what’s needed
+
+Low-hanging fruit, no additional infrastructure needed
+
+### Read Replicas
+
+Databases like Postgres/MySQL allow replication → master handles writes, replicas handle reads
+
+Benefits:
+
+Spread read load across multiple servers
+
+Increase throughput for read-heavy apps
+
+Caveats:
+
+Replication lag → replicas may be slightly stale
+
+Must route reads to replicas and writes to master
+
+### External Caching
+
+Use in-memory caches (Redis, Memcached) or CDNs for static content
+
+Benefits:
+
+Extremely fast read access
+
+Reduces DB load dramatically
+
+Key issues:
+
+Cache invalidation: keep cache consistent with DB writes
+
+Hot keys: very popular content (e.g., trending post) can overwhelm cache
+
+Solutions: sharding cache, pre-warming, rate-limiting
+
+## Common Read Scaling Architecture
+
+Client
+  |
+  v
+Cache Layer (Redis, CDN)
+  |
+  v
+Read Replicas (Postgres/MySQL)
+  |
+  v
+Primary DB (writes only)
+
+
+Flow:
+
+Client requests data → check cache first
+
+Cache miss → go to read replica
+
+Replica returns data → optionally update cache
+
+Writes always go to primary DB → propagate to replicas
+
+## Key Considerations
+
+Cache invalidation strategies:
+- Time-based (TTL)
+- Event-based (update cache when DB changes)
+
+Replication lag:
+- Some applications tolerate slightly stale reads (eventually consistent)
+- Critical reads may still need master DB
+
+Hot keys / trending content:
+- Use separate caching strategy
+- Avoid single cache node becoming a bottleneck
+
+## Mental Model
+
+DB optimization → faster queries, no extra servers
+
+Read replicas → horizontal scaling of reads
+
+Cache/CDN → extremely fast, low-latency access, offload DB completely
+
+Think: “Don’t hit the DB if you don’t have to. If you must, let replicas share the load. Optimize queries before adding servers.”
+
+# Scaling Writes
+
+Reads can be scaled by:
+- adding replicas
+- caching
+- CDNs
+
+…but writes must modify the source of truth — which means:
+
+You can’t just duplicate writes everywhere without coordination.
+
+Writes are limited by:
+- disk throughput
+- transaction cost
+- network & replication overhead
+- consistency guarantees
+
+At high scale (payments, logs, messaging, analytics), a single DB can’t keep up.
+
+So we need strategies that spread writes across machines.
+
+## Core Strategies for Scaling Writes
+
+There are three main categories.
+
+### Horizontal Sharding (Split Data Across Databases)
+
+Instead of one giant database, you create multiple smaller DBs, each owning a subset of the data.
+
+Example sharding strategies:
+- by user id
+- by region
+- by tenant / organization
+- by hash(key)
+
+Example:
+Users A–M  → Shard 1
+Users N–Z  → Shard 2
+
+Now writes are split across shards:
+- 2× shards → 2× write throughput
+- 10× shards → 10× throughput
+
+Key challenge: choosing a good partition key
+
+It must:
+- spread load evenly
+- keep related data together
+- avoid hot spots (e.g., one shard overloaded)
+
+Bad key example:
+
+“shard by country” → everyone in India or US hits the same shard → hotspot
+
+Good key example:
+
+hash(user_id) → uniformly distributed
+
+### Vertical Partitioning (Split by Data Type)
+
+Instead of splitting rows, split tables / domains into different databases.
+
+Example:
+
+User profile data         → DB #1
+Billing + payments        → DB #2
+Logs + analytics events   → DB #3
+Messages                  → DB #4
+
+
+Why this helps:
+- different datasets scale independently
+- different SLAs and durability needs
+- different storage engines may be better suited
+
+For example:
+- messages may go to NoSQL
+- transactions stay in relational DB
+- logs go to column store or object storage
+
+### Batching & Write Aggregation
+
+Writing one row at a time is expensive.
+
+So instead we:
+- buffer writes in memory
+- group them
+- insert in bulk
+
+Examples:
+- batch inserts in analytics pipelines
+- database COPY or bulk-load operations
+- Kafka → worker → batch write to DB
+
+Benefits:
+- fewer round trips
+- fewer transactions
+- dramatically higher throughput
+
+Trade-off:
+- Data may arrive with slight delay (milliseconds → seconds)
+
+## Handling Write Bursts (Traffic Spikes)
+
+Sometimes the system receives too many writes at once (Black Friday, viral post, etc.).
+
+Three tools help here.
+
+### Write Queues (Buffer Spikes)
+
+Writes go into a queue first, workers drain queue at safe speed.
+
+Flow:
+
+Client → API → Queue → Worker → DB
+
+Benefits:
+- prevents DB overload
+- smooths traffic spikes
+- provides retry behavior
+
+Trade-off:
+- writes are no longer immediate
+- slight write latency
+
+Typical use cases:
+- logging
+- metrics ingestion
+- background operations
+- notifications
+
+### Load Shedding (Drop Less-Important Writes)
+
+If system is overwhelmed, we may:
+- reject some writes
+- drop low-priority work
+- protect critical systems
+
+Examples:
+- drop analytics events but keep payments running
+- delay email notifications during outage
+- reject spammy write traffic
+
+This is about keeping the core system alive.
+
+### Prioritized Writes
+
+Not all writes are equal.
+
+Example priority levels:
+
+1️⃣ Financial transactions
+2️⃣ Inventory updates
+3️⃣ User actions
+4️⃣ Logs & metrics
+
+In overload conditions:
+- high-priority writes continue
+- lower-priority ones are queued or dropped
+
+## Why Write Scaling Is Much Harder Than Read Scaling
+
+Reads are “safe” to duplicate.
+
+Writes:
+- must be consistent
+- must avoid conflicts
+- must avoid duplicate execution
+- must preserve ordering (sometimes)
+
+That’s why write-scaling tools tend to introduce:
+- queuing
+- batching
+- eventual consistency
+- replication complexity
+- operational overhead
+
+And why most companies avoid sharding until absolutely necessary.
+
+## Rules of Thumb (Interview-Level Intuition)
+
+Use in this order:
+
+1️⃣ First — optimize schema & queries
+2️⃣ Then — add batching & background workers
+3️⃣ Then — split services (vertical partitioning)
+4️⃣ Only when needed — shard horizontally
+
+Sharding is powerful — but it complicates everything:
+- cross-shard joins
+- transactions
+- migrations
+- resharding
+- operational complexity
+
+That’s why interviewers want to see:
+
+👉 you scale reads first
+👉 you batch writes where possible
+👉 you shard only when bottlenecks force you
