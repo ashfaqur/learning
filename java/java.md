@@ -1,4 +1,5 @@
 ## Table of Contents:
-- [Documentation](Documentation.md)
+- [Fundamentals](Fundamentals.md)
+- [Functional Programming](FunctionalProgramming.md)
 - [Singletons](Singletons.md)
 - [Concurrency](concurrency/Concurrency.md)

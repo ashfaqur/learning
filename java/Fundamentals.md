@@ -6,12 +6,6 @@
   - [Abstraction](#abstraction)
   - [Interfaces](#interfaces)
   - [Composition](#composition)
-  - [SOLID Principles](#solid-principles)
-    - [S — Single Responsibility Principle (SRP)](#s--single-responsibility-principle-srp)
-    - [O — Open/Closed Principle (OCP)](#o--openclosed-principle-ocp)
-    - [L — Liskov Substitution Principle (LSP)](#l--liskov-substitution-principle-lsp)
-    - [I — Interface Segregation Principle (ISP)](#i--interface-segregation-principle-isp)
-    - [D — Dependency Inversion Principle (DIP)](#d--dependency-inversion-principle-dip)
   - [Object equality (== vs equals / hashCode)](#object-equality--vs-equals--hashcode)
     - [== Operator:](#-operator)
     - [equals() Method:](#equals-method)
@@ -22,14 +16,16 @@
   - [Builders](#builders)
   - [How to Make a Class Immutable](#how-to-make-a-class-immutable)
 - [Data Transfer Object (DTO)](#data-transfer-object-dto)
-- [Lamda And Streams](#lamda-and-streams)
-  - [Lamdas](#lamdas)
-  - [Method References](#method-references)
-  - [Streams](#streams)
-  - [Optional](#optional)
-    - [Optional.get()](#optionalget)
-    - [Optional.orElse(T other)](#optionalorelset-other)
-    - [Optional.orElseThrow()](#optionalorelsethrow)
+- [Java Language Features](#java-language-features)
+  - [Autoboxing \& unboxing](#autoboxing--unboxing)
+    - [Pitfalls](#pitfalls)
+  - [Integer Cache](#integer-cache)
+    - [Why does Java cache small integers?](#why-does-java-cache-small-integers)
+  - [Generics (bounded/unbounded wildcards)](#generics-boundedunbounded-wildcards)
+    - [Wildcards: ?](#wildcards-)
+    - [Unbounded wildcard — List\<?\>](#unbounded-wildcard--list)
+    - [Upper-bounded wildcard — \<? extends T\>](#upper-bounded-wildcard---extends-t)
+    - [Lower-bounded wildcard — \<? super T\>](#lower-bounded-wildcard---super-t)
 
 # Object-Oriented Programming
 
@@ -250,205 +246,6 @@ car.drive();
 
 ```
 
-## SOLID Principles
-
-### S — Single Responsibility Principle (SRP)
-
-One class, one job
-
-A class should have logic for single responsibility
-
-BAD
-
-``` java
-class User {
-    void saveToDatabase() { /* DB logic */ }
-    void sendEmail() { /* Email logic */ }
-}
-```
-
-GOOD
-
-```java
-class User {
-    private String name;
-    private String email;
-    // only user data
-}
-
-class UserRepository {
-    void save(User user) { /* DB logic */ }
-}
-
-class EmailService {
-    void sendEmail(User user, String message) { /* Email logic */ }
-}
-```
-
-### O — Open/Closed Principle (OCP)
-
-Extend, don’t modify.
-
-Software entities should be open for extension, but closed for modification.
-
-BAD
-
-```java
-class PaymentProcessor {
-    void pay(String type) {
-        if (type.equals("CreditCard")) {
-            System.out.println("Paying with credit card");
-        } else if (type.equals("PayPal")) {
-            System.out.println("Paying with PayPal");
-        }
-    }
-}
-```
-
-Problem: Every time you add a new payment method, you modify the class → violates OCP.
-
-GOOD
-
-```java
-interface PaymentMethod {
-    void pay();
-}
-
-class CreditCardPayment implements PaymentMethod {
-    public void pay() {
-        System.out.println("Paying with credit card");
-    }
-}
-
-class PayPalPayment implements PaymentMethod {
-    public void pay() {
-        System.out.println("Paying with PayPal");
-    }
-}
-
-class PaymentProcessor {
-    void process(PaymentMethod method) {
-        method.pay();  // open for extension: new payment methods can be added
-    }
-}
-
-```
-
-Adding a new payment type now doesn’t require changing PaymentProcessor.
-
-You just create a new class implementing PaymentMethod.
-
-### L — Liskov Substitution Principle (LSP)
-
-Substitute safely.
-
-Subtypes must be replaceable with their base types without altering correctness.
-
-BAD
-
-```java
-class Bird {
-    void fly() { System.out.println("Flying"); }
-}
-
-class Ostrich extends Bird {
-    @Override
-    void fly() { throw new UnsupportedOperationException(); }
-}
-
-Violates LSP — ostriches can’t fly.
-
-```
-
-GOOD
-
-```java
-interface Bird {}
-interface Flyable { void fly(); }
-
-class Sparrow implements Bird, Flyable {
-    public void fly() { System.out.println("Flying"); }
-}
-
-class Ostrich implements Bird {
-    // does not implement Flyable
-}
-
-```
-
-### I — Interface Segregation Principle (ISP)
-
-Don’t force extra work.
-
-Clients should not be forced to depend on interfaces they don’t use.
-
-BAD
-
-```java
-interface Worker {
-    void work();
-    void eat();
-}
-
-class Robot implements Worker {
-    public void work() { /* work */ }
-    public void eat() { throw new UnsupportedOperationException(); }
-}
-```
-
-GOOD
-
-```java
-interface Workable {
-    void work();
-}
-interface Eatable {
-    void eat();
-}
-
-class Human implements Workable, Eatable { ... }
-class Robot implements Workable { ... }
-```
-
-### D — Dependency Inversion Principle (DIP)
-
-Depend on a contract, not a concrete class.
-
-Don’t let the high-level code directly depend on low-level details.
-Both should depend on an interface (or abstraction).
-
-BAD
-
-```java
-class MySQLDatabase {
-    void connect() { ... }
-}
-class UserService {
-    private MySQLDatabase db = new MySQLDatabase(); // tightly coupled
-}
-```
-
-GOOD
-
-```java
-interface Database {
-    void connect();
-}
-class MySQLDatabase implements Database { ... }
-class PostgreSQLDatabase implements Database { ... }
-
-class UserService {
-    private Database db;
-    UserService(Database db) {
-        this.db = db; // injected
-    } 
-}
-```
-UserService (high-level) doesn’t care if it’s MySQL or PostgreSQL.
-
-MySQLDatabase (low-level) just implements the Database interface.
-
-Both depend on the abstraction (Database).
 
 ## Object equality (== vs equals / hashCode)
 
@@ -650,154 +447,195 @@ Use records in Java 16+ for brevity.
 
 Mapping libraries like MapStruct or ModelMapper can automate conversions.
 
-# Lamda And Streams
+# Java Language Features
 
-## Lamdas
+## Autoboxing & unboxing
 
-## Method References
-
-## Streams
-
-Streams allow writing complex operations in a declarative style instead of verbose loops.
+Autoboxing is when Java automatically converts a primitive value into its corresponding wrapper object.
 
 ```java
-List<String> names = List.of("Alice", "Bob", "Charlie");
-List<String> filtered = names.stream()
-                             .filter(name -> name.startsWith("A"))
-                             .collect(Collectors.toList());
+int num = 10;
+Integer boxed = num;   // autoboxing (int -> Integer)
 ```
 
-This is much cleaner than using traditional for loops with conditional checks.
-
-1. Easier Parallelization
-
-Streams support parallel processing out-of-the-box with parallelStream().
+Unboxing is the reverse conversion — from wrapper object → primitive.
 
 ```java
-List<Integer> numbers = List.of(1, 2, 3, 4, 5);
-int sum = numbers.parallelStream().mapToInt(Integer::intValue).sum();
+Integer value = 20;
+int num = value;   // unboxing (Integer -> int)
 ```
 
-Behind the scenes, Java handles thread management, splitting work across CPU cores, reducing the effort to write multi-threaded code.
+It allows primitives to work with:
 
-2. Functional Style Encourages Immutability
+Collections (List<Integer>, not List<int>)
 
-Functional programming discourages mutable shared state.
+Generic types
 
-Operations like map, filter, reduce do not change the original collection.
-
-This reduces side effects and makes code more predictable.
-
-3. Chaining and Composability
-
-Stream operations can be chained fluently, which makes the logic easier to follow.
+Streams & functional APIs
 
 ```java
-int totalLength = names.stream()
-                       .filter(name -> name.length() > 3)
-                       .mapToInt(String::length)
-                       .sum();
+List<Integer> nums = List.of(1, 2, 3);
+int x = nums.get(0);  // unboxing
 ```
 
-Each operation transforms data in a clear pipeline.
+### Pitfalls
 
-4. Powerful Data Processing
-
-Streams provide high-level operations like:
-
-filter – select elements
-
-map – transform elements
-
-flatMap – flatten nested structures
-
-reduce – aggregate data
-
-collect – gather results into lists, sets, maps
-
-This enables complex data manipulation in fewer lines of code.
-
-5. Lazy Evaluation
-
-Intermediate operations (filter, map) are lazy and only executed when a terminal operation (collect, sum, forEach) is invoked.
-
-This improves performance by avoiding unnecessary computations.
-
-6. Encourages Declarative Programming
-
-Focuses on what to do rather than how to do it.
-
-Example: “Give me all names starting with A” vs looping manually.
-
-7. Integration with Optional
-
-Streams integrate well with Optional, allowing safe handling of absent values without explicit null checks.
+NullPointerException in unboxing
 
 ```java
-Optional<String> name = names.stream().filter(n -> n.startsWith("Z")).findFirst();
+Integer x = null;
+int y = x;   // ❌ NPE at runtime
 ```
 
-Summary:
-
-Streams and functional programming in Java make code more concise, readable, and maintainable, provide easy parallelism, support immutable and declarative programming, and offer powerful, composable data operations.
-
-## Optional
-
-### Optional.get()
-
-Purpose: Returns the value inside the Optional.
-
-Behavior:
-
-If a value is present → returns it.
-
-If empty → throws NoSuchElementException.
-
-Use carefully: Only call if you are sure the value is present.
+Autoboxing affects ==
 
 ```java
-Optional<String> opt = Optional.of("Hello");
-String val = opt.get(); // returns "Hello"
+Integer a = 128;
+Integer b = 128;
 
-Optional<String> emptyOpt = Optional.empty();
-emptyOpt.get(); // throws NoSuchElementException
-
+System.out.println(a == b);   // false
+System.out.println(a.equals(b)); // true
 ```
 
-### Optional.orElse(T other)
-
-Purpose: Returns the value if present; otherwise, returns the provided default value.
-
-Behavior: Safe alternative to get(). No exception thrown.
-
+Performance overhead
 
 ```java
-Optional<String> opt = Optional.of("Hello");
-String val = opt.orElse("Default"); // returns "Hello"
-
-Optional<String> emptyOpt = Optional.empty();
-String val2 = emptyOpt.orElse("Default"); // returns "Default"
+Integer sum = 0;
+for (int i = 0; i < 1_000_000; i++) {
+    sum += i;   // autoboxing each iteration (slow)
+}
 ```
 
-Important: The argument other is evaluated eagerly, even if the Optional has a value.
+## Integer Cache
 
-### Optional.orElseThrow()
+Java caches Integer objects in the range: -128 to 127
 
-Purpose: Returns the value if present; otherwise, throws an exception.
+``` java
+Integer a = 127;
+Integer b = 127;
 
-Behavior:
-
-By default: throws NoSuchElementException.
-
-You can also provide a custom exception with orElseThrow(Supplier<? extends X> exceptionSupplier).
+System.out.println(a == b);   // ✅ true (same cached object)
+```
+But outside that range:
 
 ```java
-Optional<String> opt = Optional.of("Hello");
-String val = opt.orElseThrow(); // returns "Hello"
+Integer x = 128;
+Integer y = 128;
 
-Optional<String> emptyOpt = Optional.empty();
-emptyOpt.orElseThrow(); // throws NoSuchElementException
+System.out.println(x == y);   // ❌ false (different objects)
+```
 
-// Custom exception
-emptyOpt.orElseThrow(() -> new IllegalArgumentException("Value missing"));
+👉 Always use .equals() for wrappers
+
+### Why does Java cache small integers?
+
+Because small numbers are used VERY frequently:
+
+loop counters
+
+array indexes
+
+common values like 0, 1, -1
+
+Caching:
+
+avoids object creation overhead
+
+improves performance
+
+reduces memory use
+
+## Generics (bounded/unbounded wildcards)
+
+Generics allow classes and methods to work with types safely (compile-time type checking).
+
+```java
+List<String> names = new ArrayList<>();
+names.add("Alice");   // only Strings allowed
+```
+
+### Wildcards: ?
+
+A wildcard means:
+
+“I don’t know the exact type, but it’s some type.”
+
+```java
+List<?> items;
+```
+You can read from it, but cannot add to it (except null).
+
+Think of ? as: read-only unknown type
+
+### Unbounded wildcard — List<?>
+
+Used when the type doesn’t matter.
+
+```java
+void printList(List<?> list) {
+    for (Object o : list) {
+        System.out.println(o);
+    }
+}
+
+printList(List.of(1,2,3));
+printList(List.of("a","b"));
+```
+
+Use when: method only reads and no insertions needed
+
+### Upper-bounded wildcard — <? extends T>
+
+Means: “any subtype of T”
+
+```java
+List<? extends Number> nums;
+
+void sum(List<? extends Number> nums) {
+    for (Number n : nums) {
+        System.out.println(n.doubleValue());
+    }
+}
+```
+
+Cannot add elements:
+
+```java
+nums.add(10);   // ❌ not allowed
+```
+
+Because we don’t know whether it is:
+
+List<Integer> ?
+
+List<Double> ?
+
+Compiler blocks it.
+
+### Lower-bounded wildcard — <? super T>
+
+Means: “any supertype of T”
+
+```java
+List<? super Integer> list;
+```
+
+Valid:
+
+List<Integer>
+
+List<Number>
+
+List<Object>
+
+Can add
+
+```java
+list.add(10);   // ✅ allowed
+```
+
+But reading returns Object:
+
+```java
+Object value = list.get(0);
 ```
