@@ -29,6 +29,7 @@ Parking Spot Types & Rules
 The lot supports multiple spot types:
 
 Spot Type	Can Park Vehicles
+
 Motorcycle	Motorcycle only
 Compact	Motorcycle, Car
 Large	Motorcycle, Car, Truck/Bus

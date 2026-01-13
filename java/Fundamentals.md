@@ -26,6 +26,11 @@
     - [Unbounded wildcard — List\<?\>](#unbounded-wildcard--list)
     - [Upper-bounded wildcard — \<? extends T\>](#upper-bounded-wildcard---extends-t)
     - [Lower-bounded wildcard — \<? super T\>](#lower-bounded-wildcard---super-t)
+- [Big Numbers](#big-numbers)
+  - [Why BigInteger / BigDecimal are needed](#why-biginteger--bigdecimal-are-needed)
+  - [BigInteger — Arbitrary-precision integers](#biginteger--arbitrary-precision-integers)
+  - [BigDecimal — Exact decimal precision](#bigdecimal--exact-decimal-precision)
+  - [Typical real-world use cases](#typical-real-world-use-cases)
 
 # Object-Oriented Programming
 
@@ -639,3 +644,164 @@ But reading returns Object:
 ```java
 Object value = list.get(0);
 ```
+
+
+# Big Numbers
+
+Big Numbers usually refers to the classes in java.math used for numbers that are too large or too precise for primitive types:
+- BigInteger — arbitrary-precision integers
+- BigDecimal — arbitrary-precision decimal numbers (for exact precision)
+
+They are commonly used in competitive programming, finance, cryptography, and scientific computation.
+
+## Why BigInteger / BigDecimal are needed
+
+Primitive numeric limits:
+
+Type	Max Value
+int 	~2.1 × 10⁹
+long	~9.22 × 10¹⁸
+double	~1.8 × 10³⁰⁸ (but imprecise)
+
+If values exceed these, or precision must be exact, primitives fail.
+
+Example failure case with double:
+
+``` java
+System.out.println(0.1 + 0.2);
+
+Output:
+
+0.30000000000000004
+```
+Floating-point rounding errors → ❌ bad for money & precision math.
+
+## BigInteger — Arbitrary-precision integers
+
+Stores integers of any length (limited only by memory).
+
+```java
+import java.math.BigInteger;
+
+BigInteger a = new BigInteger("12345678901234567890");
+BigInteger b = new BigInteger("99999999999999999999");
+
+BigInteger sum = a.add(b);
+BigInteger product = a.multiply(b);
+
+System.out.println(sum);
+System.out.println(product);
+
+Common operations
+a.add(b)
+a.subtract(b)
+a.multiply(b)
+a.divide(b)
+a.mod(b)
+a.pow(5)
+a.gcd(b)
+a.compareTo(b)
+```
+
+BigInteger is immutable → every operation returns a new object.
+
+## BigDecimal — Exact decimal precision
+
+Issue with double
+- double stores numbers as binary fractions (base 2).
+- Many decimal numbers (0.1, 0.2, 0.3, 19.99) cannot be exactly represented in binary.
+- Operations like 0.1 + 0.2 produce rounding errors → 0.30000000000000004.
+
+BigDecimal doesn’t use binary floating point at all. It stores numbers as:
+- BigInteger unscaled value — an integer with all the digits of the number.
+- Scale — number of digits after the decimal point.
+
+So for 19.99:
+- unscaledValue = 1999
+- scale = 2
+
+
+The value is interpreted as:
+
+```java
+value = unscaledValue × 10^(-scale)
+      = 1999 × 10^-2
+      = 19.99 exactly
+```
+
+✅ No binary fractions, no rounding errors. 
+ 
+Big Decimal Used when precision matters (finance, currency, tax, scientific values).
+
+```java
+import java.math.BigDecimal;
+
+BigDecimal price = new BigDecimal("19.99");
+BigDecimal tax = new BigDecimal("0.19");
+
+BigDecimal total = price.multiply(tax);
+System.out.println(total);
+```
+Using Strings prevents rounding issues.
+
+Operations
+```java
+a.add(b)
+a.subtract(b)
+a.multiply(b)
+a.divide(b, MathContext)
+a.setScale(2, RoundingMode.HALF_UP)
+```
+
+Division requires a rounding mode if the result is non-terminating:
+
+a.divide(b, 2, RoundingMode.HALF_UP);
+
+⚠️ Common pitfalls
+
+❌ Don’t construct from floating-point literals
+
+Bad:
+
+new BigDecimal(0.1); // imprecise
+
+Good:
+
+new BigDecimal("0.1"); // exact
+
+❌ Don’t use == to compare
+
+Wrong:
+
+if (a == b)
+
+Correct:
+
+a.equals(b);       // value + scale
+a.compareTo(b) == 0 // numeric comparison
+
+⚡ Performance considerations
+
+Big numbers are slower than primitives because they:
+- allocate new objects on every operation
+- do arbitrary-precision math
+- require more memory
+
+Rules of thumb:
+- Use int / long when possible
+- Use BigInteger for huge values (factorials, combinatorics, crypto)
+- Use BigDecimal when correctness > speed (currency, accounting)
+
+## Typical real-world use cases
+
+BigInteger
+- factorials & combinatorics
+- cryptography (RSA keys)
+- huge Fibonacci numbers
+- competitive programming
+
+BigDecimal
+- financial calculations
+- interest computations
+- currency conversion
+- precise scientific math

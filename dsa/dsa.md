@@ -5,3 +5,5 @@
 - [Two Pointers](twopointers/twopointers.md)
 - [Linked List](linkedlist/linkedlist.md)
 - [Trees](trees/trees.md)
+- [Bit Manipulation](bits/BitManipulation.md)
+- 
