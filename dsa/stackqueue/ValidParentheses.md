@@ -1,6 +1,7 @@
 # Valid Parentheses
 
-Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']',
+determine if the input string is valid.
 
 ## Solution
 
@@ -20,7 +21,6 @@ Use a stack to match openings with closings; stack must be empty at the end.
                 if (expected != stack.pop()) {
                     return false;
                 }
-
             } else if (map.containsValue(character)) {
                 stack.push(character);
             }

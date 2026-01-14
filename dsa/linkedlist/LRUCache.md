@@ -2,28 +2,25 @@
 
 Least Recently Used Cache
 
+https://leetcode.com/problems/lru-cache/
 
 ## Solution
 
-HashMap = find fast,
-Doubly Linked List = reorder fast.
-
-get(key) → move node to head (MRU)
-
-put(key)
-
-update + move to head if exists
-
-if full → evict tail (LRU), then insert at head
-
-Each node stores (key, value) so eviction can also remove it from the map
-
-Head = Most Recently Used
-Tail = Least Recently Used
+- HashMap = find fast,
+- Doubly Linked List = reorder fast.
+- get(key) → move node to head (MRU)
+- put(key)
+- update + move to head if exists
+- if full → evict tail (LRU), then insert at head
+- Each node stores (key, value) so eviction can also remove it from the map
+- Head = Most Recently Used
+- Tail = Least Recently Used
 
 Rule of thumb:
-
-Detach → Move/Insert → Re-link (O(1)) — never traverse.
+- Detach
+- Move/Insert
+- Re-link (O(1))
+- never traverse.
 
 ```java
 

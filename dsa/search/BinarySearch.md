@@ -1,18 +1,17 @@
 # Binary Search
 
-Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1.
+Given an array of integers nums which is sorted in ascending order,
+and an integer target, write a function to search target in nums.
+If target exists, then return its index. Otherwise, return -1.
 
 You must write an algorithm with O(log n) runtime complexity.
 
 ## Solution:
 
-Keep searching while the range is inclusive (low <= high).
-
-Check the middle.
-
-If target is smaller → move high left.
-
-If target is larger → move low right.
+- Keep searching while the range is inclusive (low <= high).
+- Check the middle.
+- If target is smaller → move high left.
+- If target is larger → move low right.
 
 ```java
 public int search(int[] nums, int target) {

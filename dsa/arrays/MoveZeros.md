@@ -18,7 +18,10 @@ https://leetcode.com/problems/move-zeroes/description/
 
 ## Solution
 
-Two pointer approach. One  to track position where the next non-zero goes another to scan the array. If the element is non-zero, place it at that pointer and increment the pointer. Zeros naturally end up at the end.
+- Two pointer approach
+- One to track position where the next non-zero goes another to scan the array.
+- If the element is non-zero, place it at that pointer and increment the pointer.
+- Zeros naturally end up at the end.
 
 Time O(n)
 Space O(1)

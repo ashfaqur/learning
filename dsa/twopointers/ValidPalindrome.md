@@ -1,10 +1,24 @@
 #  Valid Palindrome
 
-A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers.
+A phrase is a palindrome if, after converting all uppercase letters into lowercase letters
+and removing all non-alphanumeric characters, it reads the same forward and backward.
+Alphanumeric characters include letters and numbers.
 
 Given a string s, return true if it is a palindrome, or false otherwise.
 
-The trick is two pointers at the ends, skip non applicable, compare values and meet in the middle, then true otherwise false.
+Example 1:
+Input: s = "A man, a plan, a canal: Panama"
+Output: true
+Explanation: "amanaplanacanalpanama" is a palindrome.
+
+
+https://leetcode.com/problems/valid-palindrome/
+
+## Solution
+
+- Two pointers at the ends
+- Skip non applicable
+- Compare values and meet in the middle, then true otherwise false.
 
 ```java
     public boolean isPalindrome(String s) {

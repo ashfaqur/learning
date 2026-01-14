@@ -51,6 +51,3 @@ public void deleteNodeAt(int position) {
     }
 }
 ```
-
-## Table of Contents:
-- [Palindrome Linked List](PalindromeLinkedList.md)

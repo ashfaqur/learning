@@ -1,8 +1,9 @@
 # Palindrome Number
 
 A palindrome is a number or word that reads the same forward and backward.
-
 Given an integer x, return true if x is a Palindrome, and false otherwise.
+
+## Solution
 
 Reverse number with remainder and division by 10
 

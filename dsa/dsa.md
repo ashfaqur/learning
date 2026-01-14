@@ -1,9 +1,40 @@
 # Data Structure and Algorithms
 
 ## Table of Contents:
-- [Arrays](arrays/arrays.md)
-- [Two Pointers](twopointers/twopointers.md)
-- [Linked List](linkedlist/linkedlist.md)
-- [Trees](trees/trees.md)
 - [Bit Manipulation](bits/BitManipulation.md)
-- 
+- [Arrays](arrays/Arrays.md)
+  - [Two Sum](arrays/TwoSum.md)
+  - [Three Sum](arrays/ThreeSum.md)
+  - [Move Zeros](arrays/MoveZeros.md)
+  - [Merge Sorted Arrays](arrays/MergeSortedArrays.md)
+  - [Longest Consecutive Sequence](arrays/LongestConsecutiveSequence.md)
+  - [Best Time to Buy and Sell Stock](arrays/BestTimetoBuyandSellStock.md)
+  - [First Unique Character in a String](arrays/FirstUniqueCharacterinaString.md)
+  - [Reverse String](arrays/ReverseString.md)
+  - [Rotate Array](arrays/RotateArray.md)
+  - [Valid Anagram](arrays/ValidAnagram.md)
+  - [Group Anagrams](arrays/GroupAnagrams.md)
+- [Two Pointers](twopointers/twopointers.md)
+  - [Palindrome Number](twopointers/PalindromeNumber.md)
+  - [Valid Palindrome](twopointers/ValidPalindrome.md)
+  - [Remove Duplicates from Sorted Array](twopointers/RemoveDuplicatesfromSortedArray.md)
+- [Linked List](linkedlist/linkedlist.md)
+  - [Weave List](linkedlist/WeaveList.md)
+  - [Reverse Linked List](linkedlist/ReverseLinkedList.md)
+  - [Palindrome Linked List](linkedlist/PalindromeLinkedList.md)
+  - [Remove Nth Node From End of List](linkedlist/RemoveNthNodeFromEndofList.md)
+  - [Linked List Cycle](linkedlist/DetectCycle.md)
+  - [LRU Cache](linkedlist/LRUCache.md)
+- Stack Queue
+  - [Valid Parentheses](stackqueue/ValidParentheses.md)
+- Sliding Window
+  - [Longest Substring Without Repeating Characters](slidingwindow/LongestSubstringWithoutRepeatingCharacters.md)
+  - [Sliding Window Maximum](slidingwindow/SlidingWindowMaximum.md)
+- [Trees](trees/trees.md)
+  - [Binary Search Tree](trees/BinarySearchTree.md)
+  - [Insert into a Binary Search Tree](trees/InsertIntoBST.md)
+  - [Maximum Depth of Binary Tree](trees/MaxDepth.md)
+  - 
+- Search
+  - [Binary Search](search/BinarySearch.md)
+  - [Search in Rotated Sorted Array](search/SearchRotatedSortedArray.md)

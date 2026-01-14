@@ -3,22 +3,16 @@
 Given an integer array nums, rotate the array to the right by k steps, where k is non-negative.
 
 Example 1:
-
 Input: nums = [1,2,3,4,5,6,7], k = 3
-
 Output: [5,6,7,1,2,3,4]
  
- https://leetcode.com/problems/rotate-array/description/
+https://leetcode.com/problems/rotate-array/
 
 ## Solution in place with reverse
 
-Reverse the full array.
-
-Then,
-
-Right rotation = reverse all → first k → rest.
-
-Left rotation = convert to right (k → n − k) or reverse first k → rest → all.
+- Reverse the full array.
+- Right rotation: reverse first k, the reverse rest.
+- Left rotation: with k = n − k, reverse first k the reverse rest.
 
 Time O(n)
 Space O(1)
