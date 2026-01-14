@@ -191,6 +191,25 @@ In binary:
 Rule of thumb:
 x >> N  =  x ÷ 2^N (integer division, drops remainder)
 
+
+## 1️⃣ Arithmetic Right Shift (`>>`)
+- Shifts bits to the right.  
+- **Fills the new MSB with the sign bit** (keeps negative numbers negative).  
+- Roughly **divides by 2** each shift.  
+- Repeated on negative numbers → **converges to -1**.  
+- Repeated on positive numbers → **converges to 0**.
+
+## 2️⃣ Logical Right Shift (`>>>` in Java)
+- Shifts bits to the right.  
+- **Always fills MSB with 0**, ignoring the sign.  
+- Treats number as **unsigned**.  
+- Repeated on any number → eventually becomes **0**.
+
+## Rule of Thumb:
+- `>>` = “divide by 2, keep sign”  
+- `>>>` = “shift bits visually, fill left with 0”
+
+
 # Binary Bitwise Operations
 
 
