@@ -56,17 +56,15 @@ public List<List<Integer>> threeSumBrute(int[] nums) {
     }
 ```
 
-### Solution with Sort then Pointers
+### Solution with Sort then Pointers (Optimal)
 
 - Sort the array first → enables two-pointer logic and easy duplicate handling.
 - Fix one element (i), then use two pointers (left = i+1, right = end) to find two-sum = -nums[i].
 - Skip duplicates for i, left, and right to ensure unique triplets.
 - Move pointers properly: left++ if sum < target, right-- if sum > target, left++ & right-- after finding a valid triplet.
 
-
 Time O(n2)
 Space O(1)
-
 
 ```java
 public List<List<Integer>> threeSum(int[] nums) {

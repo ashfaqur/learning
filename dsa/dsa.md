@@ -4,7 +4,6 @@
 - [Bit Manipulation](bits/BitManipulation.md)
 - [Arrays](arrays/Arrays.md)
   - [Two Sum](arrays/TwoSum.md)
-  - [Three Sum](arrays/ThreeSum.md)
   - [Move Zeros](arrays/MoveZeros.md)
   - [Merge Sorted Arrays](arrays/MergeSortedArrays.md)
   - [Longest Consecutive Sequence](arrays/LongestConsecutiveSequence.md)
@@ -28,8 +27,10 @@
 - Stack Queue
   - [Valid Parentheses](stackqueue/ValidParentheses.md)
 - Sliding Window
+  - [Three Sum](slidingwindow/ThreeSum.md)
   - [Longest Substring Without Repeating Characters](slidingwindow/LongestSubstringWithoutRepeatingCharacters.md)
   - [Sliding Window Maximum](slidingwindow/SlidingWindowMaximum.md)
+  - [Container With Most Water](slidingwindow/ContainerWithMostWater.md)
 - [Trees](trees/trees.md)
   - [Binary Search Tree](trees/BinarySearchTree.md)
   - [Insert into a Binary Search Tree](trees/InsertIntoBST.md)
