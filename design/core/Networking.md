@@ -1,21 +1,21 @@
 # Networking Essentials
 
 - [Networking Essentials](#networking-essentials)
-  - [Networking Layers OSI Model](#networking-layers-osi-model)
-  - [DNS (Domain Name System)](#dns-domain-name-system)
-    - [DNS lookup flow (simplified)](#dns-lookup-flow-simplified)
-  - [TCP Handshake](#tcp-handshake)
+- [Networking Layers OSI Model](#networking-layers-osi-model)
+- [DNS (Domain Name System)](#dns-domain-name-system)
+  - [DNS lookup flow (simplified)](#dns-lookup-flow-simplified)
+- [TCP Handshake](#tcp-handshake)
   - [TCP Four-Way Teardown (Connection Close)](#tcp-four-way-teardown-connection-close)
-  - [Transport Layer Security (TLS) HTTPS Upgrade](#transport-layer-security-tls-https-upgrade)
-    - [One-sentence HTTPS summary (interview gold)](#one-sentence-https-summary-interview-gold)
-  - [HTTP Request and Response](#http-request-and-response)
-  - [Network Layer Protocols](#network-layer-protocols)
-  - [User Datagram Protocol (UDP)](#user-datagram-protocol-udp)
-  - [HTTP](#http)
-    - [Common Headers](#common-headers)
-    - [Common Request Methods](#common-request-methods)
-    - [Common Status Codes](#common-status-codes)
-    - [Authentication](#authentication)
+- [Transport Layer Security (TLS) HTTPS Upgrade](#transport-layer-security-tls-https-upgrade)
+  - [One-sentence HTTPS summary (interview gold)](#one-sentence-https-summary-interview-gold)
+- [HTTP Request and Response](#http-request-and-response)
+- [Network Layer Protocols](#network-layer-protocols)
+- [User Datagram Protocol (UDP)](#user-datagram-protocol-udp)
+- [HTTP](#http)
+  - [Common Headers](#common-headers)
+  - [Common Request Methods](#common-request-methods)
+  - [Common Status Codes](#common-status-codes)
+  - [Authentication](#authentication)
   - [REST](#rest)
   - [GraphQL](#graphql)
   - [gRPC](#grpc)
@@ -31,81 +31,47 @@
     - [Circuit Breakers](#circuit-breakers)
 
 
-## Networking Layers OSI Model
+# Networking Layers OSI Model
 
 1. Physical
-
-Transmits raw bits over a physical medium
-
-Cables, voltages, radio signals, connectors (Ethernet cable, Wi-Fi radio).
-
+   - Transmits raw bits over a physical medium
+   - Cables, voltages, radio signals, connectors (Ethernet cable, Wi-Fi radio).
 2. Data Link
-
-Moves frames between nodes on the same network
-
-MAC addresses, switches, ARP, Ethernet framing, error detection.
-
+   - Moves frames between nodes on the same network
+   - MAC addresses, switches, ARP, Ethernet framing, error detection.
 3. Network
-
-Routes packets between different networks
-
-IP addressing, routing decisions, routers (IP, ICMP).
-
+   - Routes packets between different networks
+   - IP addressing, routing decisions, routers (IP, ICMP).
 4. Transport
-
-Provides end-to-end communication and reliability
-
-Ports, flow control, retransmission (TCP) or fast best-effort delivery (UDP).
-
+   - Provides end-to-end communication and reliability
+   - Ports, flow control, retransmission (TCP) or fast best-effort delivery (UDP).
 5. Session
-
-Manages sessions between applications
-
-Session setup, maintenance, teardown (rarely explicit today).
-
+   - Manages sessions between applications
+   - Session setup, maintenance, teardown (rarely explicit today).
 6. Presentation
-
-Formats, encrypts, and compresses data
-
-Encoding, TLS/SSL, serialization (JSON, UTF-8).
-
+   - Formats, encrypts, and compresses data
+   - Encoding, TLS/SSL, serialization (JSON, UTF-8).
 7. Application
+   - User-facing network services
+   - HTTP, HTTPS, FTP, SMTP, DNS — what apps actually use.
 
-User-facing network services
-
-HTTP, HTTPS, FTP, SMTP, DNS — what apps actually use.
-
-## DNS (Domain Name System)
-
-DNS translates human-readable domain names into IP addresses.
-
+# DNS (Domain Name System)
+- DNS translates human-readable domain names into IP addresses.
 Example: www.example.com → 93.184.216.34
+- Without DNS, you’d have to remember IP addresses for every site.
+- DNS is the phonebook of the internet
+- Distributed, hierarchical, and highly cached
 
-Without DNS, you’d have to remember IP addresses for every site.
+## DNS lookup flow (simplified)
+- Browser checks cache
+- OS checks local DNS cache
+- Query sent to recursive resolver
+- Resolver asks: Root server → who handles .com?
+- Top-Level Domain (TLD) server → who handles example.com?
+- Authoritative server → here’s the IP
+- IP returned + cached (based on TTL)
 
-DNS is the phonebook of the internet
-
-Distributed, hierarchical, and highly cached
-
-### DNS lookup flow (simplified)
-
-Browser checks cache
-
-OS checks local DNS cache
-
-Query sent to recursive resolver
-
-Resolver asks:
-
-Root server → who handles .com?
-
-TLD server → who handles example.com?
-
-Authoritative server → here’s the IP
-
-IP returned + cached (based on TTL)
-
-## TCP Handshake
+# TCP Handshake
 
 Transmission Control Protocol (TCP) establishes a reliable, ordered, bidirectional connection using three messages.
 
@@ -130,7 +96,7 @@ Visual summary
     | ------ ACK ----------> |
             Connection closed
 
-## Transport Layer Security (TLS) HTTPS Upgrade
+# Transport Layer Security (TLS) HTTPS Upgrade
 
 HTTPS is HTTP secured with TLS, encrypting data to prevent eavesdropping and man-in-the-middle attacks, typically over port 443. It uses asymmetric encryption (public/private keys) to authenticate the server and securely exchange a symmetric session key, which is then used for fast bulk data encryption. During the TLS handshake, the client requests HTTPS, the server sends its CA-signed certificate containing its public key, the client verifies the certificate using the CA’s public key, and both sides establish a shared symmetric key for secure communication. This protects against attackers who cannot fake the server’s identity or decrypt traffic, and certificates are issued by trusted Certificate Authorities via a Certificate Signing Request (CSR), ensuring the server’s public key truly belongs to it.
 
@@ -153,21 +119,21 @@ HTTPS is HTTP secured with TLS, encrypting data to prevent eavesdropping and man
     |                                               |
 
 
-### One-sentence HTTPS summary (interview gold)
+## One-sentence HTTPS summary (interview gold)
 
 HTTPS uses asymmetric encryption to authenticate and exchange a symmetric key, then switches to fast symmetric encryption for secure data transfer.
 
 
-## HTTP Request and Response
+# HTTP Request and Response
 
 HTTP is a protocol for transferring data between a client and a server. The client sends an HTTP request—commonly a GET to fetch data or a POST to submit data—specifying the URL, headers, and optionally a body. The server processes the request using request handlers, checks headers and body, and responds with an HTTP response containing headers, a body, and a status code (e.g., 200 OK). HTTP headers control caching, compression, authorization, and provide metadata such as user-agent. URLs include the domain (server), path (resource), and query parameters (filters or state). This request/response cycle forms the basic workflow of web communication.
 
-## Network Layer Protocols
+# Network Layer Protocols
 
 The network layer is mainly handled by the IP protocol, which assigns addresses to devices and routes traffic. Devices usually get their IPs from a DHCP server when they boot up. On private networks, you can pick any IPs, but for internet visibility, you need public IPs allocated by a Regional Internet Registry (RIR). Public IPs are globally unique and routers know how to reach them. For example, Apple owns addresses starting with 17.0.0.0 — the internet backbone routes packets to Apple’s routers when you send traffic to these addresses.
 
 
-## User Datagram Protocol (UDP) 
+# User Datagram Protocol (UDP) 
 
 Fast but Unreliable
 
@@ -183,13 +149,13 @@ Key characteristics of UDP include:
 - Lower latency: Less overhead means faster transmission
 
 
-## HTTP
+# HTTP
 
 Hypertext Transfer Protocol (HTTP) is the de-facto standard for data communication on the web. It's a request-response protocol where clients send requests to servers, and servers respond with the requested data.
 
 HTTP is a stateless protocol, meaning that each request is independent and the server doesn't need to maintain any information about previous requests. This is generally a good thing. In system design you'll want to minimize the surface area of your system that needs to be stateful where possible. Most simple HTTP servers can be described as a function of the request parameters — they're stateless!
 
-### Common Headers
+## Common Headers
 
     ------------------------------
     Request Headers (Client → Server)
@@ -221,7 +187,7 @@ HTTP is a stateless protocol, meaning that each request is independent and the s
     WWW-Authenticate   | Challenges client for authentication (401 responses)
 
 
-### Common Request Methods
+## Common Request Methods
 
     GET: Request data from the server. GET requests should be idempotent and don't have a body.
     POST: Send data to the server.
@@ -230,7 +196,7 @@ HTTP is a stateless protocol, meaning that each request is independent and the s
     DELETE: Delete data from the server. DELETE requests should be idempotent.
 
 
-### Common Status Codes
+## Common Status Codes
 
     Success (2xx)
         200 OK: The request was successful
@@ -247,9 +213,12 @@ HTTP is a stateless protocol, meaning that each request is independent and the s
         500 Server Error: The server encountered an error
         502 Bad Gateway: The server received an invalid response from the upstream server
 
-### Authentication
-
-Even though HTTPS encrypts requests and responses, it doesn’t guarantee that the data is legitimate. APIs should never trust client-supplied identifiers like user IDs in the request body. Instead, the server should derive user identity from trusted sources such as a signed JWT token or a session, and always validate and authorize access before performing sensitive operations. This prevents attackers from tampering with requests to access or modify other users’ data.
+## Authentication
+- Even though HTTPS encrypts requests and responses, it doesn’t guarantee that the data is legitimate
+- APIs should never trust client-supplied identifiers like user IDs in the request body.
+- Instead, the server should derive user identity from trusted sources such as a signed JWT token or a session
+- Always validate and authorize access before performing sensitive operations.
+- This prevents attackers from tampering with requests to access or modify other users’ data.
 
 ## REST
 

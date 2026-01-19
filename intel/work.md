@@ -37,6 +37,42 @@ TL;DR
 - JVM handles type conversion and bridging calls between Java ↔ C/C++.
 - Your RCP client used JNI to call native code for trace capture and decoding.
 
+## Migration from JNI Monolith to gRPC Services
+
+### Legacy Architecture
+- Eclipse RCP Java desktop client
+- Java ↔ native C++ via JNI
+- Native C++ libraries configured with XML
+- Tight coupling between UI and backend logic
+- Difficult to scale, test, and evolve independently
+
+### Reasons for Moving to gRPC-Based Services
+- Separation of concerns via logical service boundaries
+- Clear team ownership of individual services
+- High-performance inter-service communication (binary protocol)
+- Multi-language support via generated gRPC stubs
+- Proto files as API-first, self-documenting contracts
+- Improved cross-team collaboration through proto code reviews
+- Decoupling backend from desktop UI (enables web & other clients)
+- Better testability and CI compared to JNI integration
+- Incremental migration with legacy and new stacks running in parallel
+- Improved observability (logging, metrics, tracing)
+- Flexible deployment and scalability
+
+## Protobuf + gRPC — TL;DR
+
+- **Protocol Buffers (protobuf)** is a language-neutral, binary serialization format
+- Uses **schema-first `.proto` files** to define data models and service APIs
+- Generates strongly-typed client & server code in multiple languages
+- **gRPC uses protobuf** to:
+  - define RPC service contracts
+  - serialize request/response messages efficiently
+- Binary encoding → **smaller payloads & faster performance** than JSON/XML
+- Field numbering enables **backward & forward compatibility**
+- Proto files act as **self-documenting API contracts** and collaboration points
+- Ideal for **high-performance, internal, multi-language service communication**
+
+
 ## Prototype
 
 In my prototype, the goal was to explore how our trace analysis workflow could evolve from a desktop-centric tool into something more modern, modular, and service-oriented.
