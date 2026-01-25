@@ -5,6 +5,11 @@
 - [Initial Files](#initial-files)
   - [CSS styling](#css-styling)
 - [Home Component](#home-component)
+- [Housing Location Component](#housing-location-component)
+- [Housing Location Interface](#housing-location-interface)
+- [Add Sample Housing Data](#add-sample-housing-data)
+- [Housing Location Component - Input Signal Prop](#housing-location-component---input-signal-prop)
+- [Housing Location show the data](#housing-location-show-the-data)
 
 
 
@@ -292,4 +297,201 @@ button {
   }    
 }
 
+```
+
+# Housing Location Component
+
+  ng generate component housingLocation
+
+Update home.ts
+
+```ts
+import { Component } from "@angular/core";
+import { HousingLocation } from "../housing-location/housing-location";
+
+@Component({
+  selector: "app-home",
+  imports: [HousingLocation],
+  templateUrl: "./home.html",
+  styleUrls: [`./home.css`],
+})
+export class Home {}
+```
+
+Update home.html to add the place holder for child housing location component
+
+```html
+<section>
+      <form>
+        <input type="text" placeholder="Filter by city" />
+        <button class="primary" type="button">Search</button>
+      </form>
+</section>
+<section class="results">
+    <app-housing-location />
+</section>  
+```
+
+# Housing Location Interface
+
+  ng generate interface housinglocation
+
+housingLocation.ts interface
+
+```ts
+export interface HousingLocationInfo {
+  id: number;
+  name: string;
+  city: string;
+  state: string;
+  photo: string;
+  availableUnits: number;
+  wifi: boolean;
+  laundry: boolean;
+}
+```
+
+# Add Sample Housing Data
+
+home.ts
+
+```ts
+import { Component } from "@angular/core";
+import { HousingLocation } from "../housing-location/housing-location";
+import { HousingLocationInfo } from "../housinglocation";
+
+@Component({
+  selector: "app-home",
+  imports: [HousingLocation],
+  templateUrl: "./home.html",
+  styleUrls: [`./home.css`],
+})
+export class Home {
+  readonly baseUrl = "https://angular.dev/assets/images/tutorials/common";
+
+  housingLocation: HousingLocationInfo = {
+    id: 9999,
+    name: "Test Home",
+    city: "Test city",
+    state: "ST",
+    photo: `${this.baseUrl}/example-house.jpg`,
+    availableUnits: 99,
+    wifi: true,
+    laundry: false,
+  };
+}
+```
+
+# Housing Location Component - Input Signal Prop
+
+housing-location.ts
+
+```ts
+import { Component, input } from "@angular/core";
+import { HousingLocationInfo } from "../housinglocation";
+
+@Component({
+  selector: "app-housing-location",
+  imports: [],
+  templateUrl: "./housing-location.html",
+  styleUrls: [`./housing-location.css`],
+})
+export class HousingLocation {
+  housingLocation = input.required<HousingLocationInfo>();
+}
+
+```
+
+Update home component template to pass the input value
+
+leftside (child component input name) = right side (parameter name from in parent component)
+
+home.html
+
+```html
+<section>
+      <form>
+        <input type="text" placeholder="Filter by city" />
+        <button class="primary" type="button">Search</button>
+      </form>
+</section>
+<section class="results">
+    <app-housing-location [housingLocation]="housingLocation"/>
+</section>
+  
+```
+
+# Housing Location show the data
+
+housing-location.html
+
+Using the {{ expression }} interpolation get the data from the corresponding ts
+
+```html
+
+<section class="listing">
+    <img
+    class="listing-photo"
+    [src]="housingLocation().photo"
+    alt="Exterior photo of {{ housingLocation().name }}"
+    crossorigin
+    />
+    <h2 class="listing-heading">{{ housingLocation().name }}</h2>
+    <p class="listing-location">
+        {{ housingLocation().city }}, {{ housingLocation().state }}
+    </p>
+</section>
+```
+
+housing-location.ts
+
+```ts
+import { Component, input } from "@angular/core";
+import { HousingLocationInfo } from "../housinglocation";
+
+@Component({
+  selector: "app-housing-location",
+  imports: [],
+  templateUrl: "./housing-location.html",
+  styleUrls: [`./housing-location.css`],
+})
+export class HousingLocation {
+  housingLocation = input.required<HousingLocationInfo>();
+}
+
+```
+
+CSS for housing location
+
+```css
+.listing {
+  background: var(--accent-color);
+  border-radius: 30px;
+  padding-bottom: 30px;
+}
+.listing-heading {
+  color: var(--primary-color);
+  padding: 10px 20px 0 20px;
+}
+.listing-photo {
+  height: 250px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 30px 30px 0 0;
+}
+.listing-location {
+  padding: 10px 20px 20px 20px;
+}
+.listing-location::before {
+  content: url('/public/location-pin.svg') / '';
+}
+section.listing a {
+  padding-left: 20px;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+section.listing a::after {
+  content: '\203A';
+  margin-left: 5px;
+}
 ```
