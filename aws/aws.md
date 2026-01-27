@@ -176,3 +176,36 @@ Summary:
   - When (Condition)
 - Use `Allow` or `Deny` and follow the least privilege principle
 
+# AWS CLI
+
+## Installation
+
+Instructions:
+
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+```shell
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+Update
+
+```shell
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+```
+
+## CLI Usage
+
+```shell
+aws configure
+aws iam list-users
+```
+
+## Cloud Shell
+
+
+
