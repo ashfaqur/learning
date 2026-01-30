@@ -1,3 +1,15 @@
+- [Create AWS Account](#create-aws-account)
+- [How to Choose an AWS Region](#how-to-choose-an-aws-region)
+- [AWS Availability Zones (AZs)](#aws-availability-zones-azs)
+- [AWS Points of Presence (Edge Locations)](#aws-points-of-presence-edge-locations)
+- [AWS Identity and Access Management (IAM)](#aws-identity-and-access-management-iam)
+- [IAM Policies Structure](#iam-policies-structure)
+- [AWS CLI](#aws-cli)
+  - [Installation](#installation)
+  - [CLI Usage](#cli-usage)
+  - [Cloud Shell](#cloud-shell)
+
+
 # Create AWS Account
 
 Create a new AWS Account done
@@ -206,6 +218,8 @@ aws iam list-users
 ```
 
 ## Cloud Shell
+
+CLI in the web interface
 
 
 

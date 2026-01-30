@@ -1,6 +1,6 @@
-# Tutorial
+# Demo Notes
 
-- [Tutorial](#tutorial)
+- [Demo Notes](#demo-notes)
 - [Setup](#setup)
 - [Initial Files](#initial-files)
   - [CSS styling](#css-styling)

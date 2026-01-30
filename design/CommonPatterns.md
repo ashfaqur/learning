@@ -116,14 +116,10 @@ Good for:
 - interview designs (MVP)
 
 #### Long Polling
-
-Client asks the server: “Hold this request open until something happens.”
-
-Server replies only when there’s an update.
-
-Then client immediately opens another request.
-
-This reduces waste.
+- Client asks the server: “Hold this request open until something happens.”
+- Server replies only when there’s an update.
+- Then client immediately opens another request.
+- This reduces waste.
 
 Used historically by apps like:
 - early Facebook chat
