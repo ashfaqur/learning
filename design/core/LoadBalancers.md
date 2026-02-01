@@ -1,39 +1,54 @@
-# Load Balancing
 
 - [Load Balancing](#load-balancing)
+  - [Vertical Scaling (Scale Up)](#vertical-scaling-scale-up)
+  - [Horizontal Scaling (Scale Out)](#horizontal-scaling-scale-out)
   - [Client-Side Load Balancing](#client-side-load-balancing)
   - [Layer 4 Load Balancer](#layer-4-load-balancer)
   - [Layer 7 Load Balancer](#layer-7-load-balancer)
   - [Health Checks and Fault Tolerance](#health-checks-and-fault-tolerance)
   - [Load Balancing Algorithms](#load-balancing-algorithms)
 
+# Load Balancing
 
-Load balancing is the practice of distributing incoming network traffic across multiple servers to ensure no single server becomes a bottleneck, improving performance, availability, and reliability of applications. A load balancer acts as a traffic manager, deciding which server should handle each request based on factors like current load, response times, or health checks. This is especially important in high-traffic systems to prevent downtime and ensure consistent response times for users.
+- Load balancing is the practice of distributing incoming network traffic across multiple servers to ensure no single server becomes a bottleneck, improving performance, availability, and reliability of applications.
+- A load balancer acts as a traffic manager, deciding which server should handle each request based on factors like current load, response times, or health checks.
+- This is especially important in high-traffic systems to prevent downtime and ensure consistent response times for users.
 
-There are two main approaches to scaling for load balancing: vertical scaling and horizontal scaling.
+## Vertical Scaling (Scale Up)
+- Increase resources (CPU, RAM, storage) on a single server.
+- Simple to implement but limited by hardware and can be costly.
 
-Vertical scaling (scaling up) means adding more resources—CPU, RAM, or storage—to a single server to handle increased load. It's simple but limited by hardware constraints and can become expensive.
-
-Horizontal scaling (scaling out) involves adding more servers to the system and distributing traffic among them. This approach is more flexible, allows for better fault tolerance, and is often used in cloud-native architectures with load balancers automatically routing requests to healthy servers.
+## Horizontal Scaling (Scale Out)
+- Add more servers and distribute traffic among them.
+- More flexible, improves fault tolerance, and commonly used in cloud-based systems.
 
 ## Client-Side Load Balancing
-
-Client-side load balancing is a strategy where the client decides which server to connect to by consulting a service registry or directory that lists available servers. This allows the client to choose the fastest or most appropriate server directly, reducing the overhead of routing through a centralized load balancer. Examples include Redis Cluster, where clients hash keys to determine the target node, and DNS, which rotates IP addresses for a domain to distribute traffic among servers.
-
-This approach works well for controlled clients or scenarios where updates can tolerate some delay, as clients need to stay informed about server availability. It is especially useful for internal microservices (e.g., gRPC) and can reduce latency, but for large-scale public clients or dynamic environments, a dedicated server-side load balancer is usually preferred.
+- Client-side load balancing means the client picks which server to talk to using a list of available servers.
+- This removes the need for a central load balancer and can reduce latency.
+- Common examples: Redis Cluster (key hashing) and DNS-based load distribution.
+- Works best for internal or controlled clients where server lists can be kept reasonably up to date.
+- Less suitable for public or highly dynamic systems, where server-side load balancers are usually better.
 
 ## Layer 4 Load Balancer
-
-Layer 4 load balancers operate at the transport layer (TCP/UDP) and route traffic based only on IP addresses and ports, without inspecting application data. They are extremely fast and efficient, maintaining persistent TCP connections so that once a client is connected, all traffic in that session goes to the same backend server. Because they don’t understand HTTP or request content, they can’t do content-based routing, but they’re ideal for high-performance workloads and persistent connections like WebSockets.
+- Layer 4 load balancers work at the TCP/UDP level using IPs and ports.
+- They’re very fast and efficient, with persistent connections per session.
+- No visibility into HTTP or request content → no content-based routing.
+- Best suited for high-performance traffic and long-lived connections (e.g. WebSockets).
 
 ## Layer 7 Load Balancer
-
-Layer 7 load balancers work at the application layer, understanding HTTP and routing requests based on content like URLs, headers, and cookies rather than just IPs and ports. They terminate client connections and create new ones to backend servers, enabling powerful features such as path-based routing, session affinity, and API-style traffic splitting. This flexibility comes at the cost of higher CPU overhead due to deep packet inspection. L7 load balancers are ideal for HTTP-based traffic, while persistent, connection-oriented protocols like WebSockets typically fit better with Layer 4 load balancing.
+- Layer 7 load balancers operate at the application layer and understand HTTP.
+- They route traffic based on URLs, headers, cookies, etc.
+- Enable features like path-based routing, session affinity, and API traffic splitting.
+- Higher CPU overhead due to request inspection.
+- Best for HTTP traffic; long-lived connections (e.g. WebSockets) usually suit Layer 4 better.
 
 ## Health Checks and Fault Tolerance
 
-Health checks are how load balancers enable fault tolerance and high availability by continuously monitoring backend servers and automatically removing unhealthy ones from traffic rotation. They can be simple Layer 4 checks (e.g., “can I open a TCP connection?”) or deeper Layer 7 checks (e.g., “does an HTTP endpoint return 200 OK?”). When a server crashes or misbehaves, the load balancer detects it and routes traffic around the failure without user impact, then resumes sending traffic once the server recovers.
+- Health checks let load balancers detect unhealthy servers and maintain high availability.
+- Can be simple TCP checks (Layer 4) or full HTTP checks (Layer 7).\Unhealthy servers are removed from rotation; traffic is routed around failures.
+- Traffic resumes once servers recover, ensuring fault tolerance without affecting users.
 
 ## Load Balancing Algorithms
-
-Dedicated load balancers give you control over how traffic is distributed. Simple algorithms like round robin or random work best for stateless services and scale naturally when new servers are added. For stateful or long-lived connections (like SSE or WebSockets), smarter algorithms such as least connections help prevent one server from becoming overloaded with persistent clients, improving stability and fairness.
+- Load balancers use algorithms to distribute traffic.
+- Round robin or random → simple, good for stateless services.
+- Least connections → better for stateful or long-lived connections (WebSockets, SSE) to prevent overload and improve fairness.
