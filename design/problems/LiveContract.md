@@ -212,7 +212,7 @@ pageChange	-> { pageNumber: 3, userId: "advisor123" }
 contractSigned	->	{ signedBy: "customer456", signedAt: "2026-02-01T15:45:00Z" }
 statusUpdate	->	{ status: "SIGNED" }
 
-1. Update database
+4. Update database
 
 contracts
 - contractId
@@ -222,4 +222,52 @@ contracts
 
 DELETE /sessions/{id}
 
+## Satisfy non functional requirements
+
+1. Real-time Responsiveness
+- WebSockets for 1:1 sessions for low-latency bidirectional communication
+- Session state in memory/Redis to avoid DB round-trips for page changes
+- Only critical events (e.g., contractSigned) go to DB, ephemeral events stay in memory
+- Use CDN or blob storage for fast document retrieval
+
+Result: Page changes, document navigation, and signing appear near instantly.
+
+2. Reliability
+No data loss, contracts and signatures are durable.
+- Database (PostgreSQL) stores all persistent data: contracts, status, and signatures
+- Blob storage stores documents for durability and high availability
+- Immutable contract rules: once status is SIGNED, no updates are allowed
+- Optional: write-ahead logging or transactions in DB for critical updates
+
+Result: Even if the server or session fails, contract data remains safe.
+
+3. Security
+Only authorized users can access contracts; data is encrypted.
+- Authentication and Authorization:
+  - REST and WebSocket endpoints require JWT or session token
+  - Only advisor or customer for a contract can join the session
+- Data encryption:
+  - TLS/HTTPS for REST and WSS for WebSocket
+  - Optional encryption-at-rest for database and blob storage
+- Pre-signed URLs for document downloads for temporary, limited access
+
+Result: Unauthorized access is prevented, data in transit and at rest is protected.
+
+4. Scalability
+Support many simultaneous live sessions.
+- WebSocket server clusters for multiple servers to handle live sessions
+- Redis for shared ephemeral session state, supporting multi-server architecture
+- Blob storage offloads document storage so servers don’t bottleneck on files
+- Stateless REST APIs for easy horizontal scaling
+
+Result: Can handle hundreds or thousands of concurrent live sessions.
+
+5. Availability
+System remains usable even if some components fail.
+- Redis deployed in replicated or clustered mode for failover support
+- WebSocket servers behind load balancer, allowing session reconnects
+- Database replicas and backups ensure critical data survives DB failure
+- Blob storage is highly available by design (AWS S3, Azure Blob)
+
+Result: Users can continue live sessions, read contract data, and reconnect after temporary failures.
 
