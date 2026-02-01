@@ -14,6 +14,8 @@
   - [Housing Service - Inject Data](#housing-service---inject-data)
   - [Routing](#routing)
   - [Add Routing To Housing Details Component](#add-routing-to-housing-details-component)
+  - [Housing Details Component - Using ID from Route](#housing-details-component---using-id-from-route)
+  - [Housing Details Component - Using Input From Service](#housing-details-component---using-input-from-service)
 
 
 
@@ -666,14 +668,24 @@ export class App {
   title = "default";
 }
 ```
-Then use it in the template
+Then use it in the template.
+Note the router link for clicking home,
+and router outlet
 
 `app.html`
 
 ```html
+<main>
+    <a [routerLink]="['/']">
+    <header class="brand-name">
+        <img class="brand-logo" src="/public/logo.svg" alt="logo" aria-hidden="true" />
+    </header>
+    </a>
     <section class="content">
          <router-outlet />
     </section>
+</main>
+
 ```
 
 Last step is to bootstrap the routing configuration
@@ -700,7 +712,7 @@ bootstrapApplication(App, {
 In the housing location component, add the routing link
 to the details page for that housing.
 
-First impor the routing stuff
+First import the routing stuff
 
 `housing-location.ts`
 
@@ -720,7 +732,7 @@ export class HousingLocation {
 }
 ```
 
-Add routing to the template
+Add routing to the housing location template
 
 `housing-location.html`
 
@@ -741,3 +753,167 @@ Add routing to the template
 </section>
 
 ```
+
+## Housing Details Component - Using ID from Route
+
+`housing-details.ts`
+
+```ts
+import { Component, inject } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { HousingService } from "../housing-service";
+import { HousingLocationInfo } from "../housinglocation";
+
+@Component({
+  selector: "app-housing-details",
+  imports: [],
+  templateUrl: "./housing-details.html",
+  styleUrls: [`./housing-details.css`],
+})
+export class HousingDetails {
+  route: ActivatedRoute = inject(ActivatedRoute);
+  housingLocationId = -1;
+  constructor() {
+    this.housingLocationId = Number(this.route.snapshot.params["id"]);
+  }
+}
+```
+
+Now using the id in the template
+
+`housing-details.html`
+
+```html
+<p>
+   details works! {{ housingLocationId }}
+</p>
+
+```
+
+## Housing Details Component - Using Input From Service
+
+Now use the id to get the actual data from the service
+
+`housing-details.ts`
+
+```ts
+import { Component, inject } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { HousingService } from "../housing-service";
+import { HousingLocationInfo } from "../housinglocation";
+
+@Component({
+  selector: "app-housing-details",
+  imports: [],
+  templateUrl: "./housing-details.html",
+  styleUrls: [`./housing-details.css`],
+})
+export class HousingDetails {
+  route: ActivatedRoute = inject(ActivatedRoute);
+  housingService = inject(HousingService);
+  housingLocation: HousingLocationInfo | undefined;
+  constructor() {
+    const housingLocationId = Number(this.route.snapshot.params["id"]);
+    this.housingLocation =
+      this.housingService.getHousingLocationById(housingLocationId);
+  }
+}
+```
+
+Update the html template
+
+`housing-details.html`
+
+```html
+<article>
+      <img
+        class="listing-photo"
+        [src]="housingLocation?.photo"
+        alt="Exterior photo of {{ housingLocation?.name }}"
+        crossorigin
+      />
+      <section class="listing-description">
+        <h2 class="listing-heading">{{ housingLocation?.name }}</h2>
+        <p class="listing-location">{{ housingLocation?.city }}, {{ housingLocation?.state }}</p>
+      </section>
+      <section class="listing-features">
+        <h2 class="section-heading">About this housing location</h2>
+        <ul>
+          <li>Units available: {{ housingLocation?.availableUnits }}</li>
+          <li>Does this location have wifi: {{ housingLocation?.wifi }}</li>
+          <li>Does this location have laundry: {{ housingLocation?.laundry }}</li>
+        </ul>
+      </section>
+</article>
+```
+
+`housing-details.css`
+
+```css
+.listing-photo {
+  height: 600px;
+  width: 50%;
+  object-fit: cover;
+  border-radius: 30px;
+  float: right;
+}
+.listing-heading {
+  font-size: 48pt;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.listing-location::before {
+  content: url('/public/location-pin.svg') / '';
+}
+.listing-location {
+  font-size: 24pt;
+  margin-bottom: 15px;
+}
+.listing-features > .section-heading {
+  color: var(--secondary-color);
+  font-size: 24pt;
+  margin-bottom: 15px;
+}
+.listing-features {
+  margin-bottom: 20px;
+}
+.listing-features li {
+  font-size: 14pt;
+}
+li {
+  list-style-type: none;
+}
+.listing-apply .section-heading {
+  font-size: 18pt;
+  margin-bottom: 15px;
+}
+label,
+input {
+  display: block;
+}
+label {
+  color: var(--secondary-color);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12pt;
+}
+input {
+  font-size: 16pt;
+  margin-bottom: 15px;
+  padding: 10px;
+  width: 400px;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: solid 0.3px;
+}
+@media (max-width: 1024px) {
+  .listing-photo {
+    width: 100%;
+    height: 400px;
+  }
+}
+
+```
+
+
