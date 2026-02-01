@@ -1,19 +1,23 @@
 # Demo Notes
 
 - [Demo Notes](#demo-notes)
-- [Setup](#setup)
-- [Initial Files](#initial-files)
+  - [Setup](#setup)
+  - [Initial Files](#initial-files)
   - [CSS styling](#css-styling)
-- [Home Component](#home-component)
-- [Housing Location Component](#housing-location-component)
-- [Housing Location Interface](#housing-location-interface)
-- [Add Sample Housing Data](#add-sample-housing-data)
-- [Housing Location Component - Input Signal Prop](#housing-location-component---input-signal-prop)
-- [Housing Location show the data](#housing-location-show-the-data)
+  - [Home Component](#home-component)
+  - [Housing Location Child Component](#housing-location-child-component)
+  - [Housing Location Interface](#housing-location-interface)
+  - [Add Sample Housing Data](#add-sample-housing-data)
+  - [Housing Location Component - Input Signal Prop](#housing-location-component---input-signal-prop)
+  - [Housing Location show the data](#housing-location-show-the-data)
+  - [Using @for loop](#using-for-loop)
+  - [Housing Service - Inject Data](#housing-service---inject-data)
+  - [Routing](#routing)
+  - [Add Routing To Housing Details Component](#add-routing-to-housing-details-component)
 
 
 
-# Setup
+## Setup
 
 Check node version
 
@@ -33,9 +37,9 @@ Run and serve the app on localhost:4200
 
     ng serve
 
-# Initial Files
+## Initial Files
 
-package.json
+`package.json`
 
 package.json is used by npm (the node package manager) to run the finished app.
 
@@ -70,7 +74,7 @@ package.json is used by npm (the node package manager) to run the finished app.
   }
 }
 ```
-index.html
+`index.html`
 
 ```html
 <!doctype html>
@@ -92,7 +96,7 @@ index.html
 </html>
 ```
 
-styles.css
+`styles.css`
 
 ```css
 /* You can add global styles to this file, and also import other style files */
@@ -120,7 +124,7 @@ button.primary {
 }
 ```
 
-main.ts
+`main.ts`
 
 ```ts
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
@@ -132,9 +136,12 @@ bootstrapApplication(App, {providers: [provideProtractorTestingSupport()]}).catc
 
 ```
 
-app.ts
+`app.ts`
 
-app.ts is the source file that describes the app-root component. This is the top-level Angular component in the app. A component is the basic building block of an Angular application. The component description includes the component's code, HTML template, and styles, which can be described in this file, or in separate files.
+- app.ts is the source file that describes the app-root component.
+- This is the top-level Angular component in the app.
+- A component is the basic building block of an Angular application.
+- The component description includes the component's code, HTML template, and styles, which can be described in this file, or in separate files.
 
 ```ts
 import {Component} from '@angular/core';
@@ -150,7 +157,7 @@ export class App {
 }
 ```
 
-app.css
+`app.css`
 
 ```css
 :host {
@@ -170,15 +177,15 @@ header {
 
 other files:
 
-.angular has files required to build the Angular app.
+`.angular` has files required to build the Angular app.
 
-.e2e has files used to test the app.
+`.e2e` has files used to test the app.
 
-.node_modules has the node.js packages that the app uses.
+`.node_modules` has the node.js packages that the app uses.
 
-angular.json describes the Angular app to the app building tools.
+`angular.json` describes the Angular app to the app building tools.
 
-tsconfig.* are the files that describe the app's configuration to the TypeScript compiler.
+`tsconfig.*` are the files that describe the app's configuration to the TypeScript compiler.
 
 ## CSS styling
 
@@ -189,11 +196,11 @@ tsconfig.* are the files that describe the app's configuration to the TypeScript
 - box-shadow: var(--shadow-color) just reads that global value
 
 
-# Home Component
+## Home Component
 
     ng generate component home
 
-app.ts
+`app.ts`
 
 move template to own html
 
@@ -213,7 +220,7 @@ export class App {
 
 ```
 
-app.html
+`app.html`
 
 add the app-home tag
 
@@ -231,7 +238,7 @@ add the app-home tag
 
 And now the home component
 
-home.ts
+`home.ts`
 
 ```ts
 import { Component } from "@angular/core";
@@ -246,7 +253,7 @@ export class Home {}
 
 ```
 
-home.html
+`home.html`
 
 ```html
 <section>
@@ -257,7 +264,7 @@ home.html
 </section>  
 ```
 
-home.css
+`home.css`
 
 ```css
 .results {
@@ -299,11 +306,11 @@ button {
 
 ```
 
-# Housing Location Component
+## Housing Location Child Component
 
   ng generate component housingLocation
 
-Update home.ts
+Update `home.ts`
 
 ```ts
 import { Component } from "@angular/core";
@@ -318,7 +325,7 @@ import { HousingLocation } from "../housing-location/housing-location";
 export class Home {}
 ```
 
-Update home.html to add the place holder for child housing location component
+Update `home.html` to add the place holder for child housing location component
 
 ```html
 <section>
@@ -332,11 +339,11 @@ Update home.html to add the place holder for child housing location component
 </section>  
 ```
 
-# Housing Location Interface
+## Housing Location Interface
 
   ng generate interface housinglocation
 
-housingLocation.ts interface
+`housingLocation.ts` interface
 
 ```ts
 export interface HousingLocationInfo {
@@ -351,9 +358,9 @@ export interface HousingLocationInfo {
 }
 ```
 
-# Add Sample Housing Data
+## Add Sample Housing Data
 
-home.ts
+`home.ts`
 
 ```ts
 import { Component } from "@angular/core";
@@ -382,9 +389,9 @@ export class Home {
 }
 ```
 
-# Housing Location Component - Input Signal Prop
+## Housing Location Component - Input Signal Prop
 
-housing-location.ts
+`housing-location.ts`
 
 ```ts
 import { Component, input } from "@angular/core";
@@ -406,7 +413,7 @@ Update home component template to pass the input value
 
 leftside (child component input name) = right side (parameter name from in parent component)
 
-home.html
+`home.html`
 
 ```html
 <section>
@@ -421,9 +428,9 @@ home.html
   
 ```
 
-# Housing Location show the data
+## Housing Location show the data
 
-housing-location.html
+`housing-location.html`
 
 Using the {{ expression }} interpolation get the data from the corresponding ts
 
@@ -443,7 +450,7 @@ Using the {{ expression }} interpolation get the data from the corresponding ts
 </section>
 ```
 
-housing-location.ts
+`housing-location.ts`
 
 ```ts
 import { Component, input } from "@angular/core";
@@ -462,6 +469,8 @@ export class HousingLocation {
 ```
 
 CSS for housing location
+
+`housing-location.css`
 
 ```css
 .listing {
@@ -494,4 +503,241 @@ section.listing a::after {
   content: '\203A';
   margin-left: 5px;
 }
+```
+
+## Using @for loop
+
+Use a list instead of single item
+
+`home.ts`
+
+```ts
+export class Home {
+  readonly baseUrl = "https://angular.dev/assets/images/tutorials/common";
+
+  housingLocationList: HousingLocationInfo[] = [
+    {
+      id: 0,
+      name: "Acme Fresh Start Housing",
+      city: "Chicago",
+      state: "IL",
+      photo: `${this.baseUrl}/bernard-hermant-CLKGGwIBTaY-unsplash.jpg`,
+      availableUnits: 4,
+      wifi: true,
+      laundry: true,
+    },
+}
+```
+
+Using @for loop in the template
+
+`home.html`
+
+```html
+<section class="results">
+    @for (housingLocation of housingLocationList; track $index) {
+        <app-housing-location [housingLocation]="housingLocation" />
+      }
+</section>
+```
+
+## Housing Service - Inject Data
+
+Create a service
+
+  ng generate service housing-service --skip-tests
+
+Move the input data here
+
+`housing-service`
+
+```ts
+import { Injectable } from "@angular/core";
+import { HousingLocationInfo } from "./housinglocation";
+
+@Injectable({
+  providedIn: "root",
+})
+export class HousingService {
+  readonly baseUrl = "https://angular.dev/assets/images/tutorials/common";
+
+  housingLocationList: HousingLocationInfo[] = [
+    {
+      id: 0,
+      name: "Acme Fresh Start Housing",
+      city: "Chicago",
+      state: "IL",
+      photo: `${this.baseUrl}/bernard-hermant-CLKGGwIBTaY-unsplash.jpg`,
+      availableUnits: 4,
+      wifi: true,
+      laundry: true,
+    },
+  ];
+
+  getAllHousingLocations(): HousingLocationInfo[] {
+    return this.housingLocationList;
+  }
+
+  getHousingLocationById(id: number): HousingLocationInfo | undefined {
+    return this.housingLocationList.find(
+      (housingLocation) => housingLocation.id === id,
+    );
+  }
+}
+
+```
+
+Then inject the data in the home component
+
+`home.ts`
+
+```ts
+import { Component, inject } from "@angular/core";
+import { HousingLocation } from "../housing-location/housing-location";
+import { HousingLocationInfo } from "../housinglocation";
+import { HousingService } from "../housing-service";
+
+@Component({
+  selector: "app-home",
+  imports: [HousingLocation],
+  templateUrl: "./home.html",
+  styleUrls: [`./home.css`],
+})
+export class Home {
+  housingLocationList: HousingLocationInfo[] = [];
+  housingService: HousingService = inject(HousingService);
+
+  constructor() {
+    this.housingLocationList = this.housingService.getAllHousingLocations();
+  }
+}
+```
+
+## Routing
+
+Create a new component called Housing Details
+
+  ng generate component housing-details
+
+For now it is empty
+
+Next create routes
+
+`routes.ts`
+
+```ts
+import { Routes } from "@angular/router";
+import { Home } from "./home/home";
+import { HousingDetails } from "./housing-details/housing-details";
+
+const routeConfig: Routes = [
+  {
+    path: "",
+    component: Home,
+    title: "Home page",
+  },
+  {
+    path: "details/:id",
+    component: HousingDetails,
+    title: "Home details",
+  },
+];
+export default routeConfig;
+```
+
+In the base App component template add the route stub
+
+First import the Routing 
+
+`app.ts`
+
+```ts
+import { Component } from "@angular/core";
+import { RouterLink, RouterOutlet } from "@angular/router";
+import { Home } from "./home/home";
+
+@Component({
+  selector: "app-root",
+  imports: [Home, RouterOutlet, RouterLink],
+  templateUrl: "./app.html",
+  styleUrls: ["./app.css"],
+})
+export class App {
+  title = "default";
+}
+```
+Then use it in the template
+
+`app.html`
+
+```html
+    <section class="content">
+         <router-outlet />
+    </section>
+```
+
+Last step is to bootstrap the routing configuration
+
+`main.ts`
+
+```ts
+import {
+  bootstrapApplication,
+  provideProtractorTestingSupport,
+} from "@angular/platform-browser";
+import { provideRouter } from "@angular/router";
+import routeConfig from "./app/routes";
+import { App } from "./app/app";
+
+bootstrapApplication(App, {
+  providers: [provideProtractorTestingSupport(), provideRouter(routeConfig)],
+}).catch((err) => console.error(err));
+
+```
+
+## Add Routing To Housing Details Component
+
+In the housing location component, add the routing link
+to the details page for that housing.
+
+First impor the routing stuff
+
+`housing-location.ts`
+
+```ts
+import { Component, input } from "@angular/core";
+import { RouterLink, RouterOutlet } from "@angular/router";
+import { HousingLocationInfo } from "../housinglocation";
+
+@Component({
+  selector: "app-housing-location",
+  imports: [RouterOutlet, RouterLink],
+  templateUrl: "./housing-location.html",
+  styleUrls: [`./housing-location.css`],
+})
+export class HousingLocation {
+  housingLocation = input.required<HousingLocationInfo>();
+}
+```
+
+Add routing to the template
+
+`housing-location.html`
+
+```html
+<section class="listing">
+    <img
+    class="listing-photo"
+    [src]="housingLocation().photo"
+    alt="Exterior photo of {{ housingLocation().name }}"
+    crossorigin
+    />
+    <h2 class="listing-heading">{{ housingLocation().name }}</h2>
+    <p class="listing-location">
+        {{ housingLocation().city }}, {{ housingLocation().state }}
+    </p>
+    <!-- Routing to the details page -->
+    <a [routerLink]="['/details', housingLocation().id]">Learn More</a>
+</section>
+
 ```
