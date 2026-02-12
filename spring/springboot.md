@@ -133,14 +133,78 @@ Spring Boot made Spring apps faster to build, easier to maintain, and better sui
 
 ## Bean lifecycle & scopes
 
-Bean: Object managed by Spring IoC container
+Bean: An object created, managed, and destroyed by the Spring IoC container. Spring controls when the bean is created, how dependencies are injected, and when it is cleaned up.
 
-Lifecycle: Instantiation → DI → Aware callbacks → PostConstruct → ready → PreDestroy
+### Bean lifecycle
 
-Scopes: Define lifetime & visibility
+Lifecycle describes the steps a bean goes through from creation to destruction.
 
-Singleton (default), Prototype, Request, Session, Application, WebSocket
+- Instantiation  
+  - Spring creates the bean instance (using constructor or factory method)
+  - At this point, the object exists but has no dependencies yet
 
-Spring Boot auto-manages most lifecycles for you, but knowing this is important for stateful beans and testing.
+- Dependency Injection (DI)  
+  - Spring injects required dependencies (constructor, setter, or field)
+  - Bean is now fully wired but not yet ready for use
 
+- Aware callbacks  
+  - If the bean implements *Aware interfaces, Spring injects container-related info
+  - Examples: BeanNameAware, ApplicationContextAware
+  - Used when a bean needs access to Spring infrastructure
+
+- PostConstruct  
+  - Method annotated with @PostConstruct is called
+  - Used for initialization logic (validation, setup, loading data)
+  - Bean is now fully initialized
+
+- Ready  
+  - Bean is available for use by the application
+  - Business logic can safely run here
+
+- PreDestroy  
+  - Method annotated with @PreDestroy is called before bean removal
+  - Used for cleanup (closing connections, releasing resources)
+  - Only applies to beans managed by the container (not prototype beans)
+
+### Bean scopes
+
+Scopes define how long a bean lives and how it is shared.
+
+- Singleton (default)  
+  - One instance per Spring container
+  - Shared across the entire application
+  - Created at startup (usually)
+  - Best for stateless services
+
+- Prototype  
+  - New instance every time the bean is requested
+  - Spring does not manage full lifecycle (no PreDestroy)
+  - Use carefully, mainly for stateful objects
+
+- Request  
+  - One instance per HTTP request
+  - Exists only during a single web request
+  - Used in web applications
+
+- Session  
+  - One instance per HTTP session
+  - Lives as long as the user session
+  - Useful for user-specific state
+
+- Application  
+  - One instance per ServletContext
+  - Shared across the entire web application
+  - Similar to singleton but scoped to the web context
+
+- WebSocket  
+  - One instance per WebSocket session
+  - Used in real-time, bidirectional communication
+
+### Rule of thumb
+- Use singleton for most beans
+- Avoid state in singleton beans
+- Use web scopes only when building web-layer logic
+- Prefer stateless, immutable beans
+
+## Constructor vs field vs setter injection
 

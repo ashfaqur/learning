@@ -113,14 +113,6 @@ WebSocket for real-time events:
 
 ### Create a contract
 
-+----------------+         HTTP POST          +----------------+        SQL Insert       +----------------+
-|   Advisor UI   | ----------------------->  |  Backend/API   | -----------------------> |   Database     |
-| (Frontend App) |                           |  (REST Server) |                          |  (Contracts)   |
-+----------------+                           +----------------+                          +----------------+
-        |                                           |
-        | <----------------- Response -------------|
-        |   { contractId }     |
-
 POST /contracts
 ->
 {
@@ -142,6 +134,14 @@ contracts
 users:
 - userid
 - role
+
+
+POST /contract
+  +--------+   ---------->   +--------+        +----------+
+  |        |                 |        |        | Database |
+  | Client |                 | Server |--------| users    |
+  |        |   <----------   |        |        | contracts|
+  +--------+   contractId    +--------+        +----------+
 
 ### Upload and view contract documents
 
@@ -175,6 +175,18 @@ GET /documents/{id}
   "documentId": "doc123",
   "fileUrl": "https://bucket.example.com/abc123.pdf",
 }
+
+
+                             +--------+
+                             | Bucket |
+                             +---+----+
+                                 |
+          POST /contract/id/doc  |             +----------+
+  +--------+   ---------->   +---+----+        | Database |
+  |        |                 |        |        | documents|
+  | Client |                 | Server |--------| (fileUrl)|
+  |        |   <----------   |        |        +----------+
+  +--------+      url        +--------+
 
 ### Live session between advisor and customer
 
@@ -221,6 +233,30 @@ contracts
 5. Close session
 
 DELETE /sessions/{id}
+
+
+
+                                +--------+
+                                | Bucket |
+                                +---+----+
+                                    |
+  +--------+    1. POST /session    |          +------------+
+  | Client | -------------------+   |          |  Database  |
+  +--------+                    |   |          | (contracts)|
+               3. WSS Connection|   |          +-----+------+
+                                |   |                |
+                          +-----+---+----+     5. Update State
+                          |              |           |
+  +--------+    3. WSS    |    Server    |-----------+
+  | Client | -------------|              |
+  +--------+              +-----+---+----+
+                                |   |
+                                |   | 2. Store Session Info
+                                |   |
+                          +-----+---+----+
+                          |    Redis     |
+                          | (Session ID) |
+                          +--------------+
 
 ## Satisfy non functional requirements
 
