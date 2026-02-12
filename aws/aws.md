@@ -15,6 +15,7 @@
   - [EC2 User Data](#ec2-user-data)
   - [EC2 Instance Types](#ec2-instance-types)
     - [Naming Convention](#naming-convention)
+  - [Security Groups](#security-groups)
 
 
 # Create AWS Account
@@ -423,3 +424,57 @@ Key Idea
 | c5d.4xlarge     | 16   | 32           | 1 × 400 GB NVMe SSD  | Up to 10 Gbps       | 4,750                |
 | r5.16xlarge     | 64   | 512          | EBS Only             | 20 Gbps             | 13,600               |
 | m5.8xlarge      | 32   | 128          | EBS Only             | 10 Gbps             | 6,800                |
+
+
+## Security Groups
+
+Security Groups are the foundation of network security in AWS.
+They act as virtual firewalls controlling traffic to and from EC2 instances.
+
+1. Core Concept
+- Security Groups control:
+  - Inbound traffic (into the instance)
+  - Outbound traffic (out of the instance)
+- They only contain **allow rules** (no explicit deny rules)
+- Rules can reference:
+  - IP addresses (IPv4 / IPv6)
+  - Other Security Groups
+
+2. What They Regulate
+- Access to specific ports
+- Authorized IP ranges
+- Inbound network traffic
+- Outbound network traffic
+
+They operate at the instance level.
+
+3. Important Characteristics
+- Can be attached to multiple EC2 instances
+- Scoped to a specific Region and VPC
+- Operate outside the EC2 instance
+  - If traffic is blocked, the EC2 never sees it
+- Stateful:
+  - If inbound traffic is allowed, response traffic is automatically allowed
+
+4. Default Behavior
+- All inbound traffic is blocked by default
+- All outbound traffic is allowed by default
+
+5. Troubleshooting Tips
+- Timeout → Likely a Security Group issue
+- "Connection refused" → Application not running or misconfigured
+
+6. Referencing Other Security Groups
+- You can allow traffic from another Security Group
+- Useful for:
+  - App server ↔ Database communication
+  - Layered architecture security
+- Improves security by avoiding public IP exposure
+
+7. Common Ports to Know
+- 22 → SSH (Linux login)
+- 21 → FTP
+- 22 → SFTP (over SSH)
+- 80 → HTTP
+- 443 → HTTPS
+- 3389 → RDP (Windows login)
