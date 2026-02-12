@@ -8,6 +8,13 @@
   - [Installation](#installation)
   - [CLI Usage](#cli-usage)
   - [Cloud Shell](#cloud-shell)
+- [Amazon EC2 (Elastic Compute Cloud)](#amazon-ec2-elastic-compute-cloud)
+  - [Core Concept](#core-concept)
+  - [Main Components Around EC2](#main-components-around-ec2)
+  - [EC2 Sizing \& Configuration Options](#ec2-sizing--configuration-options)
+  - [EC2 User Data](#ec2-user-data)
+  - [EC2 Instance Types](#ec2-instance-types)
+    - [Naming Convention](#naming-convention)
 
 
 # Create AWS Account
@@ -221,5 +228,198 @@ aws iam list-users
 
 CLI in the web interface
 
+# Amazon EC2 (Elastic Compute Cloud)
 
+Amazon EC2 is a core AWS service that provides Infrastructure as a Service (IaaS).
 
+It allows you to rent and manage virtual servers in the cloud instead of owning physical hardware.
+
+## Core Concept
+- EC2 = Elastic Compute Cloud
+- Provides on-demand virtual machines in AWS
+- You control:
+  - Operating system
+  - Instance type (CPU, RAM)
+  - Storage
+  - Networking
+- You are responsible for managing the instance (patching, security, etc.)
+
+## Main Components Around EC2
+
+1. EC2 Instances
+  - Virtual machines running in AWS
+  - Used to host applications, APIs, websites, databases, etc.
+
+2. EBS Elastic Block Store
+  - Virtual hard drives attached to EC2 instances
+  - Persistent storage (data survives instance stop/start)
+
+3. ELB Elastic Load Balancer
+  - Distributes incoming traffic across multiple EC2 instances
+  - Improves availability and fault tolerance
+
+4. ASG Auto Scaling Group
+  - Automatically adds or removes EC2 instances
+  - Maintains desired capacity
+  - Handles scaling based on traffic or metrics
+
+## EC2 Sizing & Configuration Options
+
+When launching an EC2 instance, you must choose how it is sized and configured based on your workload needs.
+
+1. Operating System (OS)
+- Choose the OS for the instance:
+  - Linux
+  - Windows
+  - macOS
+- Determines software compatibility and licensing cost
+
+2. Compute Power (CPU)
+- Number of vCPUs (virtual CPUs)
+- Defines processing capability
+- Choose based on workload type (general, compute-intensive, etc.)
+
+3. Memory (RAM)
+- Amount of Random-Access Memory
+- Important for memory-heavy applications (databases, caching, analytics)
+
+4. Storage Options
+
+- Network-attached storage
+  - EBS (Elastic Block Store) → persistent block storage
+  - EFS (Elastic File System) → shared file system
+
+- Instance Store
+  - Physically attached hardware disk
+  - Very fast
+  - Data is lost if the instance stops or terminates
+
+5. Networking
+- Network card performance (varies by instance type)
+- Can assign a Public IP address
+- Impacts bandwidth and throughput
+
+6. Security
+- Security Groups
+  - Act as a virtual firewall
+  - Control inbound and outbound traffic
+
+7. EC2 User Data (Bootstrap Script)
+- Script executed at first launch
+- Used to:
+  - Install software
+  - Configure services
+  - Automate setup
+- Helps automate instance provisioning
+
+## EC2 User Data
+
+EC2 User Data allows you to automatically run a script when an EC2 instance launches.
+
+1. What is EC2 User Data
+- Used to bootstrap an EC2 instance
+- Bootstrapping means running commands automatically when the machine starts
+- The script runs only once at the first launch of the instance
+
+2. Purpose
+- Automates initial configuration
+- Reduces manual setup
+- Ensures consistent environment setup across instances
+
+3. Common Use Cases
+- Installing system updates
+- Installing required software (e.g., Nginx, Apache, Docker)
+- Downloading files from the internet
+- Configuring services
+- Running custom setup commands
+
+4. Execution Details
+- Runs automatically during instance launch
+- Executes with root user privileges
+- Can be written as:
+  - Bash script (Linux)
+  - PowerShell script (Windows)
+
+## EC2 Instance Types
+
+EC2 provides different instance types optimized for different workloads and use cases.
+
+1. General Purpose
+- Balanced resources:
+  - Compute
+  - Memory
+  - Networking
+- Suitable for:
+  - Web servers
+  - Code repositories
+  - Small to medium applications
+- Example: `t2.micro`
+- Good default choice when workload is not specialized
+
+2. Compute Optimized
+- High-performance processors
+- Designed for compute-intensive workloads
+- Use cases:
+  - Batch processing
+  - Media transcoding
+  - High-performance web servers
+  - High Performance Computing (HPC)
+  - Scientific modeling & machine learning
+  - Dedicated gaming servers
+
+3. Memory Optimized
+- Large amounts of RAM
+- Designed for workloads processing large datasets in memory
+- Use cases:
+  - High-performance databases (Relational & NoSQL)
+  - In-memory databases (e.g., BI systems)
+  - Distributed cache stores
+  - Real-time big data processing
+
+4. Storage Optimized
+- High, sequential read/write performance
+- Uses fast local storage (e.g., NVMe SSD)
+- Designed for storage-intensive workloads
+- Use cases:
+  - High-frequency OLTP systems
+  - Relational & NoSQL databases
+  - Data warehousing
+  - Distributed file systems
+  - Cache layers (e.g., Redis)
+
+### Naming Convention
+
+Example: `m5.2xlarge`
+
+- m → Instance class (family)
+  - Defines the workload category
+  - Example:
+    - m = General purpose
+    - c = Compute optimized
+    - r = Memory optimized
+
+- 5 → Generation
+  - Newer generations offer:
+    - Better performance
+    - Improved networking
+    - Better price/performance ratio
+
+- 2xlarge → Size within the instance family
+  - Defines amount of:
+    - vCPUs
+    - RAM
+    - Network bandwidth
+  - Larger size = more resources
+
+Key Idea
+- Same family → similar performance characteristics
+- Different sizes → scale up/down resources
+- Newer generation → typically better efficiency
+
+| Instance        | vCPU | Memory (GiB) | Storage              | Network Performance | EBS Bandwidth (Mbps) |
+|-----------------|------|--------------|----------------------|---------------------|----------------------|
+| t2.micro        | 1    | 1            | EBS Only             | Low to Moderate     | -                    |
+| t2.xlarge       | 4    | 16           | EBS Only             | Moderate            | -                    |
+| c5d.4xlarge     | 16   | 32           | 1 × 400 GB NVMe SSD  | Up to 10 Gbps       | 4,750                |
+| r5.16xlarge     | 64   | 512          | EBS Only             | 20 Gbps             | 13,600               |
+| m5.8xlarge      | 32   | 128          | EBS Only             | 10 Gbps             | 6,800                |
