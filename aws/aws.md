@@ -16,6 +16,12 @@
   - [EC2 Instance Types](#ec2-instance-types)
     - [Naming Convention](#naming-convention)
   - [Security Groups](#security-groups)
+  - [SSH to EC2 Instance](#ssh-to-ec2-instance)
+  - [IAM Role in EC2 Instance](#iam-role-in-ec2-instance)
+  - [EC2 Instance Purchasing Options](#ec2-instance-purchasing-options)
+  - [EC2 Spot Instances](#ec2-spot-instances)
+    - [Spot Fleets](#spot-fleets)
+    - [Spot Allocation Strategies](#spot-allocation-strategies)
 
 
 # Create AWS Account
@@ -478,3 +484,245 @@ They operate at the instance level.
 - 80 → HTTP
 - 443 → HTTPS
 - 3389 → RDP (Windows login)
+
+## SSH to EC2 Instance
+
+SSH (Secure Shell) is used to securely connect to a Linux EC2 instance.
+
+1. Requirements
+- EC2 instance must be running
+- Instance must have:
+  - Public IP (or accessible via VPN/Bastion Host)
+  - Port 22 open in Security Group
+- You must have the private key (.pem file)
+
+2. Basic SSH Command (Linux / macOS)
+- Set correct permissions:
+  - chmod 400 my-key.pem
+- Connect:
+  - ssh -i my-key.pem ec2-user@<Public-IP>
+
+3. Default Usernames
+- Amazon Linux → ec2-user
+- Ubuntu → ubuntu
+- CentOS → centos
+- Debian → admin
+
+4. Security Considerations
+- Never share your private key
+- Restrict SSH access to your IP only
+- Do not allow 0.0.0.0/0 for port 22 in production
+
+
+## IAM Role in EC2 Instance
+
+An IAM Role allows an EC2 instance to securely access other AWS services without using access keys.
+
+1. Purpose
+- Grant permissions to EC2 instances
+- Avoid storing AWS access keys inside the instance
+- Improve security
+
+2. How It Works
+- Create an IAM Role with required permissions (policies)
+- Attach the role to the EC2 instance
+- EC2 automatically receives temporary credentials
+- AWS manages credential rotation
+
+3. Common Use Cases
+- EC2 accessing S3 buckets
+- Writing logs to CloudWatch
+- Accessing DynamoDB
+- Calling other AWS APIs
+
+## EC2 Instance Purchasing Options
+
+EC2 offers multiple purchasing models depending on workload duration, flexibility, and cost sensitivity.
+
+1. On-Demand Instances
+- Pay for what you use
+- Linux/Windows billed per second (after first minute)
+- Other OS billed per hour
+- No upfront cost
+- No long-term commitment
+- Highest cost compared to other options
+- Best for short-term, unpredictable workloads
+
+2. Reserved Instances (RI)
+- Up to 72% discount compared to On-Demand
+- Commit for 1 year or 3 years
+- Reserve specific attributes:
+  - Instance type
+  - Region
+  - Tenancy
+  - OS
+- Payment options:
+  - No Upfront
+  - Partial Upfront
+  - All Upfront
+- Scope:
+  - Regional
+  - Zonal (reserves capacity in specific AZ)
+- Best for steady-state workloads (e.g., databases)
+- Can buy/sell in Reserved Instance Marketplace
+
+Convertible Reserved Instances
+- Can change:
+  - Instance family
+  - Instance type
+  - OS
+  - Scope
+  - Tenancy
+- Up to 66% discount
+- More flexibility than standard RI
+
+3. Savings Plans
+- Up to 72% discount (similar to RIs)
+- Commit to spend a fixed amount per hour for 1 or 3 years
+- Locked to:
+  - Instance family
+  - Region
+- Flexible across:
+  - Instance size
+  - OS
+  - Tenancy
+- Usage beyond commitment billed at On-Demand rate
+
+4. Spot Instances
+- Up to 90% discount
+- Can be terminated anytime if spot price exceeds your bid
+- Most cost-efficient option
+- Suitable for:
+  - Batch jobs
+  - Data analysis
+  - Image processing
+  - Distributed workloads
+  - Flexible start/end time workloads
+- Not suitable for critical systems or databases
+
+5. Dedicated Hosts
+- Entire physical server dedicated to you
+- Full control over instance placement
+- Supports bring-your-own-license (BYOL)
+- Purchasing options:
+  - On-Demand
+  - Reserved (1 or 3 years)
+- Most expensive option
+- Used for compliance or licensing requirements
+
+6. Dedicated Instances
+- Hardware dedicated to you
+- May share hardware with other instances in same account
+- No control over placement
+- Hardware may change after stop/start
+
+7. Capacity Reservations
+- Reserve On-Demand capacity in a specific AZ
+- No long-term commitment
+- No discount (billed at On-Demand rate)
+- Pay whether instance is running or not
+- Can combine with RIs or Savings Plans for billing discounts
+- Suitable when you must guarantee capacity in a specific AZ
+
+TL;DR
+- On-Demand → flexible, no commitment, highest cost
+- Reserved → long-term steady workloads, big discount
+- Savings Plans → spend-based commitment, flexible within family
+- Spot → cheapest, can be interrupted
+- Dedicated Host → entire physical server, compliance/licensing
+- Dedicated Instance → hardware isolated but less control
+- Capacity Reservation → guarantee capacity in specific AZ, no discount
+
+EC2 Purchasing Options
+
+| Requirement / Scenario                         | Best Option                    | Why                                  |
+|------------------------------------------------|--------------------------------|--------------------------------------|
+| Short-term, unpredictable workload             | On-Demand                      | No commitment, flexible              |
+| Steady-state, long-term workload               | Reserved Instance (1 or 3 yr)  | Large discount                       |
+| Long-term but want flexibility                 | Savings Plan                   | Flexible across size/OS within family|
+| Maximum discount, interruption acceptable      | Spot Instance                  | Cheapest option                      |
+| Guaranteed capacity in specific AZ             | Capacity Reservation           | Reserves capacity, no discount       |
+| Compliance / Bring Your Own License (BYOL)     | Dedicated Host                 | Full physical server control         |
+| Hardware isolated but no placement control     | Dedicated Instance             | No shared hardware with other accounts |
+
+Quick decision rule:
+- Need flexibility → On-Demand
+- Need discount → Reserved or Savings Plan
+- Need cheapest → Spot
+- Need guaranteed capacity → Capacity Reservation
+- Need compliance/licensing control → Dedicated Host
+
+
+## EC2 Spot Instances
+
+Spot Instances allow you to use unused EC2 capacity at a very large discount.
+
+1. Core Concept
+- Up to 90% cheaper than On-Demand
+- You define a maximum price
+- Instance runs while current Spot price < your max price
+- Spot price changes based on supply and demand
+
+2. Interruption Behavior
+- If Spot price exceeds your max price:
+  - Instance can be stopped or terminated
+- You receive a 2-minute warning before interruption
+- Not suitable for critical systems or databases
+
+3. Spot Block (Fixed Duration)
+- Request Spot Instances for 1 to 6 hours
+- No interruptions during the block period
+- Rarely, AWS may still reclaim capacity
+
+Use Cases
+- Batch processing
+- Data analysis
+- Image/video processing
+- Distributed workloads
+- Flexible start and end times
+
+When to Avoid
+- Databases
+- Critical production systems
+- Stateful workloads without fault tolerance
+
+### Spot Fleets
+
+Spot Fleet = collection of Spot Instances (optionally mixed with On-Demand)
+
+Purpose:
+- Automatically maintain target capacity
+- Select cheapest or most available instances
+
+You define:
+- Target capacity
+- Max price
+- Launch pools:
+  - Instance type
+  - OS
+  - Availability Zone
+
+Fleet stops launching when:
+- Target capacity is reached
+- Max cost is reached
+
+### Spot Allocation Strategies
+
+1. lowestPrice
+- Chooses cheapest pool
+- Best for cost optimization
+- Good for short workloads
+
+2. diversified
+- Distributes instances across multiple pools
+- Improves availability
+- Good for long-running workloads
+
+3. capacityOptimized
+- Chooses pool with best capacity availability
+- Reduces interruptions
+
+4. priceCapacityOptimized (recommended)
+- Prioritizes pools with highest capacity
+- Then selects lowest price among them
+- Best general-purpose strategy
