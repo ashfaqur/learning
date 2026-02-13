@@ -13,11 +13,12 @@
     - [hashCode() Method:](#hashcode-method)
 - [Immutable Objects](#immutable-objects)
   - [String](#string)
-  - [Records](#records)
   - [Builders](#builders)
   - [How to Make a Class Immutable](#how-to-make-a-class-immutable)
 - [Data Transfer Object (DTO)](#data-transfer-object-dto)
 - [Java Language Features](#java-language-features)
+  - [Records](#records)
+  - [Sealed Classes](#sealed-classes)
   - [Autoboxing \& unboxing](#autoboxing--unboxing)
     - [Pitfalls](#pitfalls)
   - [Integer Cache](#integer-cache)
@@ -336,20 +337,6 @@ System.out.println(s1); // Hello
 System.out.println(s2); // HELLO
 ```
 
-## Records
-
-Records are immutable data carriers by default.
-
-Fields are final, and the compiler generates getters.
-
-```java
-record Person(String name, int age) {}
-
-Person p1 = new Person("Alice", 25);
-// p1.name = "Bob";  // ❌ Compilation error
-Person p2 = new Person("Bob", 25); // new object
-```
-
 ## Builders
 
 Builders are mutable, but used to construct immutable objects.
@@ -421,6 +408,8 @@ final class Student {
 
 ```
 
+Note: records are commonly used for immutable data. See `Records` under `Java Language Features` for Java 17 rules and examples.
+
 
 # Data Transfer Object (DTO)
 
@@ -459,6 +448,97 @@ Use records in Java 16+ for brevity.
 Mapping libraries like MapStruct or ModelMapper can automate conversions.
 
 # Java Language Features
+
+## Records
+
+Records (Java 16+) are concise immutable data carriers and are a Java language feature.
+
+Key rules (Java 17):
+- A record is implicitly `final` and cannot extend another class.
+- Record components become `private final` fields.
+- The compiler generates constructor, component accessors, `equals()`, `hashCode()`, and `toString()`.
+- A record can implement interfaces.
+
+Basic record:
+
+```java
+public record Person(String name, int age) {}
+
+Person p = new Person("Alice", 25);
+System.out.println(p.name()); // accessor method
+```
+
+Customization with compact constructor validation:
+
+```java
+public record Employee(String id, String email) {
+    public Employee {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("id is required");
+        }
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("invalid email");
+        }
+    }
+
+    public String domain() {
+        return email.substring(email.indexOf('@') + 1);
+    }
+}
+```
+
+Shallow immutability and defensive copy:
+
+```java
+import java.util.List;
+
+public record CoursePlan(String name, List<String> topics) {
+    public CoursePlan {
+        topics = List.copyOf(topics); // defensive copy
+    }
+}
+```
+
+Pitfalls:
+- Records are shallowly immutable. Mutable components must be defensively copied.
+- Records are usually a bad fit for entities with mutable lifecycle/identity.
+
+When to use:
+- DTOs for APIs/services.
+- Value objects and response models.
+
+## Sealed Classes
+
+Sealed classes/interfaces (Java 17) restrict inheritance to a known set of types.
+
+Key rules:
+- Use `sealed` with a `permits` clause to list allowed subclasses.
+- Each permitted subclass must be marked `final`, `sealed`, or `non-sealed`.
+- Permitted types must be in the same module (or same package for unnamed modules).
+
+```java
+sealed interface Shape permits Circle, Rectangle, Square {}
+
+final class Circle implements Shape {
+    final double radius;
+    Circle(double radius) { this.radius = radius; }
+}
+
+sealed class Rectangle implements Shape permits FilledRectangle {}
+
+final class FilledRectangle extends Rectangle {}
+
+non-sealed class Square implements Shape {}
+```
+
+Why use:
+- Model closed hierarchies in domain code.
+- Improve maintainability by controlling extension points.
+- Helps with exhaustive handling in modern `switch`/pattern-matching style code paths.
+
+Pitfalls:
+- Missing `final`/`sealed`/`non-sealed` on a permitted subclass causes compile-time errors.
+- Overusing `non-sealed` weakens the guarantees of sealed hierarchies.
 
 ## Autoboxing & unboxing
 
