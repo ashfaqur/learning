@@ -330,11 +330,28 @@ Benefits:
 
 ## String
 
+`String` is immutable in Java: once created, its value cannot change.
+
+Why Java keeps `String` immutable:
+- Security: values used in class loading, file paths, URLs, and DB connections cannot be changed unexpectedly.
+- Thread safety: multiple threads can safely share the same string object.
+- String pool optimization: identical literals can be reused safely because content never changes.
+- Stable hashing: cached `hashCode` stays valid, making `HashMap` keys reliable.
+
+How immutability is enforced:
+- `String` class is `final`, so it cannot be subclassed and behavior cannot be overridden.
+- Internal character storage is private and not directly exposed for mutation.
+- Methods like `toUpperCase()`, `concat()`, and `replace()` return new `String` objects.
+
 ```java
 String s1 = "Hello";
 String s2 = s1.toUpperCase();  // creates a new String
 System.out.println(s1); // Hello
 System.out.println(s2); // HELLO
+
+String s3 = s1.concat(" World"); // new object
+System.out.println(s1); // Hello
+System.out.println(s3); // Hello World
 ```
 
 ## Builders

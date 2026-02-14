@@ -22,6 +22,9 @@
   - [EC2 Spot Instances](#ec2-spot-instances)
     - [Spot Fleets](#spot-fleets)
     - [Spot Allocation Strategies](#spot-allocation-strategies)
+  - [IPv4 and IPv6](#ipv4-and-ipv6)
+  - [EC2 Default IP Behavior](#ec2-default-ip-behavior)
+- [Elastic IP (EIP)](#elastic-ip-eip)
 
 
 # Create AWS Account
@@ -726,3 +729,114 @@ Fleet stops launching when:
 - Prioritizes pools with highest capacity
 - Then selects lowest price among them
 - Best general-purpose strategy
+
+## IPv4 and IPv6
+
+Networking primarily uses two IP formats:
+- IPv4 → example: 1.160.10.240
+- IPv6 → example: 3ffe:1900:4545:3:200:f8ff:fe21:67cf
+
+In most AWS scenarios IPv4 is used.
+
+IPv4 format:
+- [0-255].[0-255].[0-255].[0-255]
+- Supports about 3.7 billion public addresses
+
+IPv6:
+- Newer version
+- Designed to solve IP address exhaustion
+- Common in IoT and modern networking
+
+1. Public IP
+
+- Identifies a machine on the public internet (WWW)
+- Must be globally unique
+- Can be geo-located
+- Required for direct internet access
+- Assigned to EC2 instances if public access is needed
+
+2. Private IP
+
+- Used inside a private network (VPC)
+- Must be unique within the private network
+- Can be reused across different private networks
+- Not directly reachable from the internet
+- Internet access requires:
+  - NAT
+  - Internet Gateway
+
+Key Differences
+
+1. Public IP:
+- Internet reachable
+- Globally unique
+- Exposed to the public network
+
+2. Private IP:
+- Internal communication only
+- Not internet reachable directly
+- Used for secure internal architecture
+
+## EC2 Default IP Behavior
+
+By default, when you launch an EC2 instance in a public subnet:
+
+- It receives a private IP address for internal AWS communication
+- It receives a public IP address for internet access (if enabled)
+
+1. Private IP
+- Used for communication inside the VPC
+- Always assigned to the instance
+- Does not change during stop/start
+
+2. Public IP
+- Used to access the instance from the internet
+- Required for SSH from your local machine
+- Can change if the instance is stopped and started
+
+3. SSH Access
+- You cannot SSH using the private IP from your home computer
+- You must use the public IP
+- Unless:
+  - You are connected via VPN
+  - You use a Bastion Host inside the same VPC
+
+4. Important Behavior
+- Stop → Start:
+  - Public IP may change
+  - Private IP remains the same
+- Terminate:
+  - Both IPs are released
+
+
+# Elastic IP (EIP)
+
+An Elastic IP is a fixed public IPv4 address that you can allocate and attach to an EC2 instance.
+
+1. Why Elastic IP Exists
+- When you stop and start an EC2 instance:
+  - Public IP may change
+- If you need a fixed public IP:
+  - Use an Elastic IP
+
+2. Key Characteristics
+- Static public IPv4 address
+- Owned by your AWS account until released
+- Can be attached to only one instance at a time
+- Can be reassigned quickly to another instance
+
+3. Use Case
+- Mask instance failure by remapping EIP to another EC2 instance
+- Useful for simple failover scenarios
+
+4. Limits
+- Default limit: 5 Elastic IPs per region
+- Can request increase from AWS
+
+5. Best Practice
+- Avoid overusing Elastic IPs
+- Often indicates poor architecture
+- Prefer:
+  - DNS (Route 53) pointing to instance
+  - Load Balancer instead of public IP
+  - High availability design
