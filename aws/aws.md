@@ -25,6 +25,7 @@
   - [IPv4 and IPv6](#ipv4-and-ipv6)
   - [EC2 Default IP Behavior](#ec2-default-ip-behavior)
 - [Elastic IP (EIP)](#elastic-ip-eip)
+  - [EC2 Placement Groups](#ec2-placement-groups)
 
 
 # Create AWS Account
@@ -840,3 +841,75 @@ An Elastic IP is a fixed public IPv4 address that you can allocate and attach to
   - DNS (Route 53) pointing to instance
   - Load Balancer instead of public IP
   - High availability design
+
+## EC2 Placement Groups
+
+Placement Groups allow you to control how EC2 instances are placed on underlying hardware to optimize for performance or availability.
+
+When creating a Placement Group, you must choose one strategy:
+- Cluster
+- Spread
+- Partition
+
+1. Cluster Placement Group
+
+- Groups instances close together inside a single Availability Zone
+- Designed for low latency and high network throughput
+- Supports up to 10 Gbps network (with Enhanced Networking enabled)
+
+Pros:
+- Very low latency between instances
+- High network performance
+
+Cons:
+- If the AZ fails, all instances fail
+- No multi-AZ distribution
+
+Use cases:
+- Big Data jobs requiring fast completion
+- Applications needing extremely low latency
+- High-performance computing workloads
+
+2. Spread Placement Group
+
+- Spreads instances across different physical hardware
+- Can span multiple Availability Zones
+- Maximum 7 instances per AZ per placement group
+
+Pros:
+- Reduced risk of simultaneous failure
+- Each instance runs on separate hardware
+- High availability design
+
+Cons:
+- Limited to 7 instances per AZ
+
+Use cases:
+- Critical applications
+- Small number of instances needing maximum isolation
+- Systems where failure isolation is required
+
+3. Partition Placement Group
+
+- Divides instances into logical partitions
+- Each partition uses separate racks
+- Up to 7 partitions per AZ
+- Can span multiple AZs
+- Supports hundreds of instances
+
+Characteristics:
+- Partition failure affects only that partition
+- Other partitions remain unaffected
+- Partition info available via metadata
+
+Use cases:
+- Distributed systems:
+  - Hadoop (HDFS)
+  - Cassandra
+  - Kafka
+  - HBase
+
+TL;DR
+- Cluster → lowest latency, single AZ, high performance
+- Spread → maximum isolation, limited to 7 instances per AZ
+- Partition → large distributed systems, rack-level fault isolation
